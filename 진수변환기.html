@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Explorer - 이진수 학습 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .binary-digit {
+            transition: all 0.3s ease;
+        }
+        
+        .binary-digit.highlight {
+            background: #fbbf24;
+            color: #1f2937;
+            transform: scale(1.1);
+        }
+        
+        .success-animation {
+            animation: successPulse 0.6s ease-out;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .concept-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .method-tab {
+            transition: all 0.3s ease;
+        }
+        
+        .method-tab.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .division-step {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 헤더 -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
+                        <span class="text-lg sm:text-2xl">🔢</span>
+                    </div>
+                    <h1 class="text-lg sm:text-2xl font-bold">Binary Explorer</h1>
+                </div>
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <nav class="hidden md:flex space-x-4 lg:space-x-6">
+                    <button onclick="showSection('home')" class="nav-btn px-3 py-2 text-sm lg:text-base rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">홈</button>
+                    <button onclick="showSection('converter')" class="nav-btn px-3 py-2 text-sm lg:text-base rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">변환기</button>
+                    <button onclick="showSection('concepts')" class="nav-btn px-3 py-2 text-sm lg:text-base rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">개념학습</button>
+                    <button onclick="showSection('practice')" class="nav-btn px-3 py-2 text-sm lg:text-base rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">연습문제</button>
+                </nav>
+            </div>
+            <!-- 모바일 메뉴 -->
+            <div id="mobile-menu" class="md:hidden mt-4 space-y-2 hidden">
+                <button onclick="showSection('home'); toggleMobileMenu()" class="mobile-nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">🏠 홈</button>
+                <button onclick="showSection('converter'); toggleMobileMenu()" class="mobile-nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">🧮 변환기</button>
+                <button onclick="showSection('concepts'); toggleMobileMenu()" class="mobile-nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">📚 개념학습</button>
+                <button onclick="showSection('practice'); toggleMobileMenu()" class="mobile-nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white hover:bg-opacity-20 transition-all">🎯 연습문제</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 홈 섹션 -->
+        <section id="home-section" class="section-content">
+            <div class="text-center mb-8 sm:mb-12">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-3 sm:mb-4 px-4">이진수와 십진수를 재미있게 배워보자! 🚀</h2>
+                <p class="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8 px-4">컴퓨터의 언어를 이해하는 첫 걸음</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto px-4">
+                <!-- 변환 시뮬레이터 카드 -->
+                <div class="card-hover bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-blue-100">
+                    <div class="text-center">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl sm:text-3xl text-white">🧮</span>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">진수변환기</h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">카드 방식과 나눗셈 방식, 두 가지 방법으로 변환 과정을 시각화해서 보여줘요!</p>
+                        <button onclick="showSection('converter')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all transform hover:scale-105 text-sm sm:text-base">
+                            변환기 시작하기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 개념 학습 카드 -->
+                <div class="card-hover bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-green-100">
+                    <div class="text-center">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl sm:text-3xl text-white">📚</span>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">개념 이해하기</h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">이진수와 십진수의 원리를 그림과 애니메이션으로 쉽게 배워요!</p>
+                        <button onclick="showSection('concepts')" class="bg-green-500 hover:bg-green-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all transform hover:scale-105 text-sm sm:text-base">
+                            개념 학습하기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 연습 문제 카드 -->
+                <div class="card-hover bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-purple-100 md:col-span-2 lg:col-span-1">
+                    <div class="text-center">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl sm:text-3xl text-white">🎯</span>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">연습 문제</h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">직접 문제를 풀어보며 실력을 키워보세요! 즉시 피드백을 받을 수 있어요!</p>
+                        <button onclick="showSection('practice')" class="bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all transform hover:scale-105 text-sm sm:text-base">
+                            문제 풀기
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 학습 진행 상황 -->
+            <div class="mt-8 sm:mt-12 max-w-2xl mx-auto px-4">
+                <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-lg">
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">🎯 학습 진행 상황</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm sm:text-base text-gray-600">변환기 사용</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 sm:w-32 bg-gray-200 rounded-full h-2">
+                                    <div id="converter-progress" class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                                <span id="converter-count" class="text-xs sm:text-sm text-gray-500">0/5</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm sm:text-base text-gray-600">개념 학습</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 sm:w-32 bg-gray-200 rounded-full h-2">
+                                    <div id="concept-progress" class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                                <span id="concept-count" class="text-xs sm:text-sm text-gray-500">0/3</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm sm:text-base text-gray-600">연습 문제</span>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-20 sm:w-32 bg-gray-200 rounded-full h-2">
+                                    <div id="practice-progress" class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                                <span id="practice-count" class="text-xs sm:text-sm text-gray-500">0/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 변환기 섹션 -->
+        <section id="converter-section" class="section-content hidden">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="text-center mb-6 sm:mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">🔄 진수변환기</h2>
+                    <p class="text-base sm:text-lg text-gray-600">두 가지 방법으로 변환 과정을 확인해보세요!</p>
+                </div>
+
+                <!-- 변환 타입 선택 -->
+                <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-lg mb-6 sm:mb-8">
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                        <button onclick="setConversionType('decimal-to-binary')" id="dec-to-bin-btn" class="conversion-type-btn bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                            십진수 → 이진수
+                        </button>
+                        <button onclick="setConversionType('binary-to-decimal')" id="bin-to-dec-btn" class="conversion-type-btn bg-gray-300 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                            이진수 → 십진수
+                        </button>
+                    </div>
+
+                    <!-- 변환 방법 선택 -->
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-4 sm:mb-6" id="method-selector">
+                        <button onclick="setMethod('cards')" id="cards-method-btn" class="method-tab active px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold border-2 border-blue-200 text-sm sm:text-base">
+                            🃏 카드 방식
+                        </button>
+                        <button onclick="setMethod('division')" id="division-method-btn" class="method-tab px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold border-2 border-gray-200 bg-gray-100 text-gray-700 text-sm sm:text-base">
+                            ➗ 나눗셈 방식
+                        </button>
+                    </div>
+
+                    <!-- 입력 영역 -->
+                    <div class="text-center mb-4 sm:mb-6">
+                        <label class="block text-base sm:text-lg font-semibold text-gray-700 mb-3" id="input-label">십진수를 입력하세요 (0-255)</label>
+                        <input type="text" id="number-input" class="w-full max-w-xs px-4 py-3 text-lg sm:text-xl text-center border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="예: 42">
+                        <div class="mt-4">
+                            <button onclick="convertNumber()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105">
+                                🚀 변환하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 변환 과정 시각화 -->
+                <div id="conversion-process" class="bg-white rounded-2xl p-6 shadow-lg hidden">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">변환 과정</h3>
+                    <div id="process-steps" class="space-y-4"></div>
+                    <div id="final-result" class="mt-8 p-6 bg-green-50 rounded-xl border-2 border-green-200 hidden">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">🎉</div>
+                            <h4 class="text-xl font-bold text-green-800 mb-2">변환 완료!</h4>
+                            <div id="result-text" class="text-lg text-green-700"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예제 버튼들 -->
+                <div class="mt-6 sm:mt-8 text-center">
+                    <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">빠른 예제:</p>
+                    <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
+                        <button onclick="setExample('42')" class="example-btn bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">42</button>
+                        <button onclick="setExample('128')" class="example-btn bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">128</button>
+                        <button onclick="setExample('255')" class="example-btn bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">255</button>
+                        <button onclick="setExample('1010')" class="example-btn bg-green-100 hover:bg-green-200 text-green-800 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">1010</button>
+                        <button onclick="setExample('11111111')" class="example-btn bg-green-100 hover:bg-green-200 text-green-800 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">11111111</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 연습 문제 섹션 -->
+        <section id="practice-section" class="section-content hidden">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="text-center mb-6 sm:mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">🎯 연습 문제</h2>
+                    <p class="text-base sm:text-lg text-gray-600">직접 문제를 풀어보며 실력을 키워보세요!</p>
+                </div>
+
+                <!-- 난이도 선택 -->
+                <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-lg mb-6 sm:mb-8">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 text-center">난이도 선택</h3>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                        <button onclick="setDifficulty('easy')" id="easy-btn" class="difficulty-btn bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                            🟢 쉬움 (0-15)
+                        </button>
+                        <button onclick="setDifficulty('medium')" id="medium-btn" class="difficulty-btn bg-gray-300 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                            🟡 보통 (0-63)
+                        </button>
+                        <button onclick="setDifficulty('hard')" id="hard-btn" class="difficulty-btn bg-gray-300 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                            🔴 어려움 (0-255)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 문제 영역 -->
+                <div id="problem-area" class="bg-white rounded-2xl p-6 sm:p-8 shadow-lg mb-6 sm:mb-8">
+                    <div class="text-center">
+                        <div class="text-4xl sm:text-6xl mb-4">🎲</div>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4">새로운 문제를 시작해보세요!</h3>
+                        <button onclick="generateProblem()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105">
+                            문제 생성하기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 점수 및 통계 -->
+                <div class="grid grid-cols-3 gap-3 sm:gap-6">
+                    <div class="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">🏆</div>
+                        <div class="text-lg sm:text-2xl font-bold text-purple-600" id="score-display">0</div>
+                        <div class="text-xs sm:text-base text-gray-600">점수</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">✅</div>
+                        <div class="text-lg sm:text-2xl font-bold text-green-600" id="correct-count">0</div>
+                        <div class="text-xs sm:text-base text-gray-600">정답</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 sm:p-6 shadow-lg text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">❌</div>
+                        <div class="text-lg sm:text-2xl font-bold text-red-600" id="wrong-count">0</div>
+                        <div class="text-xs sm:text-base text-gray-600">오답</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 개념 학습 섹션 -->
+        <section id="concepts-section" class="section-content hidden">
+            <div class="max-w-4xl mx-auto px-4">
+                <div class="text-center mb-6 sm:mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">📚 개념 이해하기</h2>
+                    <p class="text-base sm:text-lg text-gray-600">이진수와 십진수의 원리를 쉽게 이해해보세요!</p>
+                </div>
+
+                <!-- 개념 카드들 -->
+                <div class="space-y-6 sm:space-y-8">
+                    <!-- 십진수 개념 -->
+                    <div class="concept-card rounded-2xl p-4 sm:p-8 shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+                                <span class="text-xl sm:text-2xl text-white">🔟</span>
+                            </div>
+                            <div class="flex-1 text-center sm:text-left">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">십진수 (Decimal)</h3>
+                                <p class="text-sm sm:text-base text-gray-600 mb-4">우리가 일상에서 사용하는 숫자 체계예요. 0부터 9까지 10개의 숫자를 사용합니다.</p>
+                                
+                                <div class="bg-blue-50 rounded-lg p-3 sm:p-4 mb-4">
+                                    <h4 class="font-semibold text-blue-800 mb-2 text-sm sm:text-base">예시: 숫자 1234</h4>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-blue-600">1</div>
+                                            <div class="text-xs text-gray-500">천의 자리</div>
+                                            <div class="text-xs text-gray-500">10³</div>
+                                        </div>
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-blue-600">2</div>
+                                            <div class="text-xs text-gray-500">백의 자리</div>
+                                            <div class="text-xs text-gray-500">10²</div>
+                                        </div>
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-blue-600">3</div>
+                                            <div class="text-xs text-gray-500">십의 자리</div>
+                                            <div class="text-xs text-gray-500">10¹</div>
+                                        </div>
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-blue-600">4</div>
+                                            <div class="text-xs text-gray-500">일의 자리</div>
+                                            <div class="text-xs text-gray-500">10⁰</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="markConceptComplete(0)" class="concept-complete-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base">
+                                    ✓ 이해했어요!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 이진수 개념 -->
+                    <div class="concept-card rounded-2xl p-4 sm:p-8 shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+                                <span class="text-xl sm:text-2xl text-white">💻</span>
+                            </div>
+                            <div class="flex-1 text-center sm:text-left">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">이진수 (Binary)</h3>
+                                <p class="text-sm sm:text-base text-gray-600 mb-4">컴퓨터가 사용하는 숫자 체계예요. 0과 1, 단 2개의 숫자만 사용합니다.</p>
+                                
+                                <div class="bg-green-50 rounded-lg p-3 sm:p-4 mb-4">
+                                    <h4 class="font-semibold text-green-800 mb-2 text-sm sm:text-base">예시: 이진수 1101</h4>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-green-600">1</div>
+                                            <div class="text-xs text-gray-500">8의 자리</div>
+                                            <div class="text-xs text-gray-500">2³</div>
+                                        </div>
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-green-600">1</div>
+                                            <div class="text-xs text-gray-500">4의 자리</div>
+                                            <div class="text-xs text-gray-500">2²</div>
+                                        </div>
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-green-600">0</div>
+                                            <div class="text-xs text-gray-500">2의 자리</div>
+                                            <div class="text-xs text-gray-500">2¹</div>
+                                        </div>
+                                        <div class="bg-white rounded p-2">
+                                            <div class="text-base sm:text-lg font-bold text-green-600">1</div>
+                                            <div class="text-xs text-gray-500">1의 자리</div>
+                                            <div class="text-xs text-gray-500">2⁰</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 text-center text-green-700 text-sm sm:text-base">
+                                        1×8 + 1×4 + 0×2 + 1×1 = 13 (십진수)
+                                    </div>
+                                </div>
+                                
+                                <button onclick="markConceptComplete(1)" class="concept-complete-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base">
+                                    ✓ 이해했어요!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 실생활 활용 -->
+                    <div class="concept-card rounded-2xl p-4 sm:p-8 shadow-lg">
+                        <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
+                                <span class="text-xl sm:text-2xl text-white">🌟</span>
+                            </div>
+                            <div class="flex-1 text-center sm:text-left">
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">실생활에서의 활용</h3>
+                                <p class="text-sm sm:text-base text-gray-600 mb-4">이진수는 우리 주변 곳곳에서 사용되고 있어요!</p>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+                                    <div class="bg-purple-50 rounded-lg p-3 sm:p-4">
+                                        <h4 class="font-semibold text-purple-800 mb-2 text-sm sm:text-base">💻 컴퓨터</h4>
+                                        <p class="text-xs sm:text-sm text-gray-600">모든 데이터를 0과 1로 저장하고 처리해요</p>
+                                    </div>
+                                    <div class="bg-purple-50 rounded-lg p-3 sm:p-4">
+                                        <h4 class="font-semibold text-purple-800 mb-2 text-sm sm:text-base">📱 스마트폰</h4>
+                                        <p class="text-xs sm:text-sm text-gray-600">앱, 사진, 음악 모두 이진수로 저장돼요</p>
+                                    </div>
+                                    <div class="bg-purple-50 rounded-lg p-3 sm:p-4">
+                                        <h4 class="font-semibold text-purple-800 mb-2 text-sm sm:text-base">🎮 게임</h4>
+                                        <p class="text-xs sm:text-sm text-gray-600">캐릭터, 배경, 소리 모두 이진수예요</p>
+                                    </div>
+                                    <div class="bg-purple-50 rounded-lg p-3 sm:p-4">
+                                        <h4 class="font-semibold text-purple-800 mb-2 text-sm sm:text-base">🌐 인터넷</h4>
+                                        <p class="text-xs sm:text-sm text-gray-600">웹페이지도 이진수로 전송돼요</p>
+                                    </div>
+                                </div>
+                                
+                                <button onclick="markConceptComplete(2)" class="concept-complete-btn bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm sm:text-base">
+                                    ✓ 이해했어요!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 성취 알림 모달 -->
+    <div id="achievement-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-sm sm:max-w-md mx-4 text-center">
+            <div class="text-4xl sm:text-6xl mb-4">🎉</div>
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">축하합니다!</h3>
+            <p id="achievement-text" class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6"></p>
+            <button onclick="closeAchievementModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                계속하기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentConversionType = 'decimal-to-binary';
+        let currentMethod = 'cards';
+        let converterUsageCount = 0;
+        let conceptsCompleted = [false, false, false];
+        
+        // 연습문제 관련 변수
+        let currentDifficulty = 'easy';
+        let currentProblem = null;
+        let practiceScore = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let totalProblems = 0;
+        
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+        
+        // 섹션 표시 함수
+        function showSection(sectionName) {
+            const sections = ['home', 'converter', 'concepts', 'practice'];
+            sections.forEach(section => {
+                const element = document.getElementById(section + '-section');
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+            
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('slide-in');
+            }
+            
+            // 네비게이션 버튼 활성화 상태 업데이트
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'bg-opacity-20');
+            });
+        }
+        
+        // 변환 타입 설정
+        function setConversionType(type) {
+            currentConversionType = type;
+            const decToBinBtn = document.getElementById('dec-to-bin-btn');
+            const binToDecBtn = document.getElementById('bin-to-dec-btn');
+            const inputLabel = document.getElementById('input-label');
+            const numberInput = document.getElementById('number-input');
+            const methodSelector = document.getElementById('method-selector');
+            
+            if (type === 'decimal-to-binary') {
+                decToBinBtn.className = 'conversion-type-btn bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold';
+                binToDecBtn.className = 'conversion-type-btn bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold';
+                inputLabel.textContent = '십진수를 입력하세요 (0-255)';
+                numberInput.placeholder = '예: 42';
+                methodSelector.classList.remove('hidden');
+            } else {
+                decToBinBtn.className = 'conversion-type-btn bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold';
+                binToDecBtn.className = 'conversion-type-btn bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold';
+                inputLabel.textContent = '이진수를 입력하세요 (0과 1만)';
+                numberInput.placeholder = '예: 101010';
+                methodSelector.classList.add('hidden'); // 이진수→십진수는 카드 방식만
+                setMethod('cards');
+            }
+            
+            // 이전 결과 초기화
+            document.getElementById('conversion-process').classList.add('hidden');
+        }
+        
+        // 변환 방법 설정
+        function setMethod(method) {
+            currentMethod = method;
+            const cardsBtn = document.getElementById('cards-method-btn');
+            const divisionBtn = document.getElementById('division-method-btn');
+            
+            if (method === 'cards') {
+                cardsBtn.className = 'method-tab active px-6 py-3 rounded-lg font-semibold border-2 border-blue-200';
+                divisionBtn.className = 'method-tab px-6 py-3 rounded-lg font-semibold border-2 border-gray-200 bg-gray-100 text-gray-700';
+            } else {
+                cardsBtn.className = 'method-tab px-6 py-3 rounded-lg font-semibold border-2 border-gray-200 bg-gray-100 text-gray-700';
+                divisionBtn.className = 'method-tab active px-6 py-3 rounded-lg font-semibold border-2 border-blue-200';
+            }
+            
+            // 이전 결과 초기화
+            document.getElementById('conversion-process').classList.add('hidden');
+        }
+        
+        // 예제 설정
+        function setExample(value) {
+            document.getElementById('number-input').value = value;
+            
+            // 변환 타입 자동 설정
+            if (/^[01]+$/.test(value)) {
+                setConversionType('binary-to-decimal');
+            } else {
+                setConversionType('decimal-to-binary');
+            }
+        }
+        
+        // 숫자 변환 함수
+        function convertNumber() {
+            const input = document.getElementById('number-input').value.trim();
+            if (!input) {
+                alert('숫자를 입력해주세요!');
+                return;
+            }
+            
+            if (currentConversionType === 'decimal-to-binary') {
+                if (currentMethod === 'cards') {
+                    convertDecimalToBinaryCards(parseInt(input));
+                } else {
+                    convertDecimalToBinaryDivision(parseInt(input));
+                }
+            } else {
+                convertBinaryToDecimal(input);
+            }
+            
+            // 사용 횟수 증가
+            converterUsageCount++;
+            updateProgress();
+            
+            if (converterUsageCount === 1) {
+                showAchievement('첫 번째 변환 완료! 🎯');
+            } else if (converterUsageCount === 5) {
+                showAchievement('변환 마스터! 5번 변환을 완료했어요! 🏆');
+            }
+        }
+        
+        // 십진수를 이진수로 변환 (카드 방식)
+        function convertDecimalToBinaryCards(decimal) {
+            if (isNaN(decimal) || decimal < 0 || decimal > 255) {
+                alert('0부터 255까지의 숫자를 입력해주세요!');
+                return;
+            }
+            
+            const processDiv = document.getElementById('conversion-process');
+            const stepsDiv = document.getElementById('process-steps');
+            const resultDiv = document.getElementById('final-result');
+            const resultText = document.getElementById('result-text');
+            
+            processDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            stepsDiv.innerHTML = '';
+            
+            // 이진수 카드 시스템으로 변환 설명
+            const maxPower = Math.floor(Math.log2(decimal || 1));
+            const cards = [];
+            let remainingValue = decimal;
+            let binary = '';
+            
+            // 큰 자리수부터 카드 확인
+            for (let power = maxPower; power >= 0; power--) {
+                const cardValue = Math.pow(2, power);
+                const canUse = remainingValue >= cardValue;
+                
+                cards.push({
+                    power: power,
+                    value: cardValue,
+                    used: canUse,
+                    digit: canUse ? 1 : 0
+                });
+                
+                if (canUse) {
+                    remainingValue -= cardValue;
+                    binary += '1';
+                } else {
+                    binary += '0';
+                }
+            }
+            
+            // 특별한 경우: 0
+            if (decimal === 0) {
+                cards.push({
+                    power: 0,
+                    value: 1,
+                    used: false,
+                    digit: 0
+                });
+                binary = '0';
+            }
+            
+            // 카드 기반 시각화 생성
+            stepsDiv.innerHTML = `
+                <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 mb-6">
+                    <h4 class="text-lg font-bold text-gray-800 mb-4 text-center">🃏 카드로 십진수 만들기</h4>
+                    <p class="text-center text-gray-600 mb-6">
+                        <span class="font-bold text-blue-600">${decimal}</span>을(를) 만들기 위해 어떤 카드들이 필요한지 확인해보세요!
+                    </p>
+                    <div class="grid gap-2 sm:gap-4 mb-4" id="decimal-cards" style="grid-template-columns: repeat(${Math.min(cards.length, 4)}, 1fr);">
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 rounded-xl p-6 mb-6">
+                    <h4 class="text-lg font-bold text-green-800 mb-4 text-center">✅ 선택된 카드들</h4>
+                    <div id="selected-cards" class="text-center">
+                        <div class="text-gray-600 mb-4">큰 카드부터 차례대로 확인하며 필요한 카드를 선택합니다</div>
+                        <div id="selection-process" class="space-y-3"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 rounded-xl p-6 border-2 border-yellow-200">
+                    <h4 class="text-lg font-bold text-yellow-800 mb-3 text-center">🎯 이진수 완성</h4>
+                    <div id="binary-result" class="text-center text-xl font-bold">
+                    </div>
+                </div>
+            `;
+            
+            const cardsDiv = document.getElementById('decimal-cards');
+            const selectionDiv = document.getElementById('selection-process');
+            const binaryResultDiv = document.getElementById('binary-result');
+            
+            // 모든 카드를 먼저 표시
+            cards.forEach((card, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'text-center';
+                cardDiv.innerHTML = `
+                    <div class="mb-2">
+                        <div class="text-sm font-semibold text-gray-600">${card.value}의 자리</div>
+                    </div>
+                    ${createDotPattern(card.value, false)}
+                    <div class="mt-2">
+                        <div class="text-xs text-gray-500">점 ${card.value}개</div>
+                    </div>
+                `;
+                cardsDiv.appendChild(cardDiv);
+            });
+            
+            // 카드 선택 과정을 순차적으로 표시
+            let currentRemaining = decimal;
+            let cardIndex = 0;
+            
+            function processNextCard() {
+                if (cardIndex < cards.length) {
+                    const card = cards[cardIndex];
+                    const cardElement = cardsDiv.children[cardIndex];
+                    
+                    // 카드 선택 과정 설명
+                    const processDiv = document.createElement('div');
+                    processDiv.className = 'bg-white rounded-lg p-4 border border-gray-200 slide-in';
+                    
+                    if (card.used) {
+                        // 카드 사용
+                        processDiv.innerHTML = `
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-lg">
+                                    <span class="font-bold text-blue-600">${currentRemaining}</span> ≥ 
+                                    <span class="font-bold text-green-600">${card.value}</span> 
+                                    <span class="text-green-600">✓ 사용 가능!</span>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    남은 값: ${currentRemaining - card.value}
+                                </div>
+                            </div>
+                        `;
+                        
+                        // 카드 활성화
+                        cardElement.innerHTML = `
+                            <div class="mb-2">
+                                <div class="text-lg font-bold text-green-600">1</div>
+                                <div class="text-sm font-semibold text-green-600">${card.value}의 자리</div>
+                            </div>
+                            ${createDotPattern(card.value, true)}
+                            <div class="mt-2">
+                                <div class="text-xs text-green-600 font-semibold">선택됨!</div>
+                            </div>
+                        `;
+                        
+                        currentRemaining -= card.value;
+                    } else {
+                        // 카드 사용 안함
+                        processDiv.innerHTML = `
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-lg">
+                                    <span class="font-bold text-blue-600">${currentRemaining}</span> < 
+                                    <span class="font-bold text-gray-500">${card.value}</span> 
+                                    <span class="text-gray-500">✗ 사용 불가</span>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    남은 값: ${currentRemaining}
+                                </div>
+                            </div>
+                        `;
+                        
+                        // 카드 비활성화 표시
+                        cardElement.innerHTML = `
+                            <div class="mb-2">
+                                <div class="text-lg font-bold text-gray-500">0</div>
+                                <div class="text-sm font-semibold text-gray-500">${card.value}의 자리</div>
+                            </div>
+                            ${createDotPattern(card.value, false)}
+                            <div class="mt-2">
+                                <div class="text-xs text-gray-500">사용 안함</div>
+                            </div>
+                        `;
+                    }
+                    
+                    selectionDiv.appendChild(processDiv);
+                    
+                    // 카드 애니메이션
+                    if (card.used) {
+                        setTimeout(() => {
+                            const dots = cardElement.querySelectorAll('.dot');
+                            dots.forEach((dot, index) => {
+                                setTimeout(() => {
+                                    dot.style.animation = 'pulse 0.5s ease-in-out';
+                                }, index * 50);
+                            });
+                        }, 500);
+                    }
+                    
+                    cardIndex++;
+                    setTimeout(processNextCard, 1500);
+                } else {
+                    // 이진수 결과 표시
+                    setTimeout(() => {
+                        const usedCards = cards.filter(c => c.used);
+                        binaryResultDiv.innerHTML = `
+                            <div class="mb-4">
+                                <div class="text-lg text-gray-700 mb-2">선택된 카드 순서대로 1, 선택 안된 카드는 0:</div>
+                                <div class="flex justify-center items-center space-x-2">
+                                    ${cards.map((card, index) => `
+                                        <span class="binary-digit ${card.used ? 'bg-green-100 text-green-800 border-green-300' : 'bg-gray-100 text-gray-500 border-gray-300'} px-3 py-2 rounded-lg border-2 font-bold text-xl">
+                                            ${card.digit}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="text-lg text-gray-600">
+                                이진수: <span class="font-bold text-green-600">${binary}</span>
+                            </div>
+                        `;
+                        
+                        // 최종 결과
+                        setTimeout(() => {
+                            resultText.innerHTML = `
+                                <div class="text-2xl font-bold mb-2">
+                                    십진수 <span class="text-blue-600">${decimal}</span> = 이진수 <span class="text-green-600">${binary}</span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    💡 <strong>카드 방식 핵심:</strong> 큰 카드부터 차례대로 확인하며, 사용한 카드는 1, 사용 안한 카드는 0으로 표시합니다!
+                                </div>
+                            `;
+                            resultDiv.classList.remove('hidden');
+                            resultDiv.classList.add('success-animation');
+                        }, 1000);
+                    }, 1000);
+                }
+            }
+            
+            // 카드 처리 시작
+            setTimeout(processNextCard, 1000);
+        }
+        
+        // 십진수를 이진수로 변환 (나눗셈 방식)
+        function convertDecimalToBinaryDivision(decimal) {
+            if (isNaN(decimal) || decimal < 0 || decimal > 255) {
+                alert('0부터 255까지의 숫자를 입력해주세요!');
+                return;
+            }
+            
+            const processDiv = document.getElementById('conversion-process');
+            const stepsDiv = document.getElementById('process-steps');
+            const resultDiv = document.getElementById('final-result');
+            const resultText = document.getElementById('result-text');
+            
+            processDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            stepsDiv.innerHTML = '';
+            
+            let steps = [];
+            let currentNumber = decimal;
+            let binary = '';
+            
+            // 나눗셈 과정 계산
+            if (decimal === 0) {
+                steps.push({ number: 0, quotient: 0, remainder: 0 });
+                binary = '0';
+            } else {
+                while (currentNumber > 0) {
+                    const quotient = Math.floor(currentNumber / 2);
+                    const remainder = currentNumber % 2;
+                    steps.push({ number: currentNumber, quotient: quotient, remainder: remainder });
+                    binary = remainder + binary;
+                    currentNumber = quotient;
+                }
+            }
+            
+            // 나눗셈 방식 시각화 생성
+            stepsDiv.innerHTML = `
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 mb-6">
+                    <h4 class="text-lg font-bold text-gray-800 mb-4 text-center">➗ 나눗셈으로 이진수 만들기</h4>
+                    <p class="text-center text-gray-600 mb-6">
+                        <span class="font-bold text-blue-600">${decimal}</span>을(를) 2로 계속 나누면서 나머지를 기록해보세요!
+                    </p>
+                    <div class="bg-white rounded-lg p-4 border-2 border-purple-200">
+                        <div class="text-center text-purple-700 font-semibold mb-4">📝 나눗셈 과정</div>
+                        <div id="division-steps" class="space-y-3"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 rounded-xl p-6 mb-6">
+                    <h4 class="text-lg font-bold text-green-800 mb-4 text-center">🔄 나머지를 거꾸로 읽기</h4>
+                    <div id="remainder-reading" class="text-center">
+                        <div class="text-gray-600 mb-4">나머지를 아래에서 위로 읽으면 이진수가 됩니다!</div>
+                        <div id="remainder-display" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 rounded-xl p-6 border-2 border-yellow-200">
+                    <h4 class="text-lg font-bold text-yellow-800 mb-3 text-center">🎯 이진수 완성</h4>
+                    <div id="division-result" class="text-center text-xl font-bold">
+                    </div>
+                </div>
+            `;
+            
+            const divisionStepsDiv = document.getElementById('division-steps');
+            const remainderDisplayDiv = document.getElementById('remainder-display');
+            const divisionResultDiv = document.getElementById('division-result');
+            
+            // 나눗셈 과정을 순차적으로 표시
+            let stepIndex = 0;
+            function showNextDivisionStep() {
+                if (stepIndex < steps.length) {
+                    const step = steps[stepIndex];
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'division-step bg-purple-50 rounded-lg p-4 border border-purple-200';
+                    
+                    if (step.number === 0 && stepIndex === 0) {
+                        stepDiv.innerHTML = `
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-lg font-bold text-purple-600">0 ÷ 2 = 0</div>
+                                <div class="text-sm text-gray-500">나머지: 0</div>
+                            </div>
+                        `;
+                    } else {
+                        stepDiv.innerHTML = `
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-lg">
+                                    <span class="font-bold text-purple-600">${step.number}</span> ÷ 2 = 
+                                    <span class="font-bold text-blue-600">${step.quotient}</span>
+                                </div>
+                                <div class="text-sm bg-yellow-100 px-2 py-1 rounded text-yellow-800 font-semibold">
+                                    나머지: ${step.remainder}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    divisionStepsDiv.appendChild(stepDiv);
+                    
+                    stepIndex++;
+                    setTimeout(showNextDivisionStep, 1000);
+                } else {
+                    // 나머지 읽기 과정 표시
+                    setTimeout(showRemainderReading, 1000);
+                }
+            }
+            
+            function showRemainderReading() {
+                remainderDisplayDiv.innerHTML = `
+                    <div class="bg-white rounded-lg p-4 border border-green-200">
+                        <div class="text-center mb-4">
+                            <div class="text-lg font-semibold text-green-800">나머지들을 아래에서 위로 읽어보세요!</div>
+                        </div>
+                        <div class="flex justify-center items-center space-x-2">
+                            ${steps.map((step, index) => `
+                                <div class="text-center">
+                                    <div class="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-lg border-2 border-yellow-300 font-bold text-xl">
+                                        ${step.remainder}
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">${steps.length - index}번째</div>
+                                </div>
+                            `).join('')}
+                            <div class="mx-4 text-2xl text-green-600">→</div>
+                            <div class="bg-green-100 text-green-800 px-4 py-3 rounded-lg border-2 border-green-300 font-bold text-2xl">
+                                ${binary}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 나머지들 순차적으로 강조
+                const remainders = remainderDisplayDiv.querySelectorAll('.bg-yellow-100');
+                let highlightIndex = remainders.length - 1;
+                
+                function highlightNextRemainder() {
+                    if (highlightIndex >= 0) {
+                        remainders[highlightIndex].style.animation = 'pulse 0.5s ease-in-out';
+                        highlightIndex--;
+                        setTimeout(highlightNextRemainder, 500);
+                    } else {
+                        // 최종 결과 표시
+                        setTimeout(() => {
+                            divisionResultDiv.innerHTML = `
+                                <div class="mb-4">
+                                    <div class="text-lg text-gray-700 mb-2">나머지를 거꾸로 읽은 결과:</div>
+                                    <div class="text-3xl font-bold text-green-600">${binary}</div>
+                                </div>
+                            `;
+                            
+                            // 최종 결과
+                            setTimeout(() => {
+                                resultText.innerHTML = `
+                                    <div class="text-2xl font-bold mb-2">
+                                        십진수 <span class="text-blue-600">${decimal}</span> = 이진수 <span class="text-green-600">${binary}</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        💡 <strong>나눗셈 방식 핵심:</strong> 2로 계속 나누면서 나머지를 기록하고, 나머지를 거꾸로 읽으면 이진수가 됩니다!
+                                    </div>
+                                `;
+                                resultDiv.classList.remove('hidden');
+                                resultDiv.classList.add('success-animation');
+                            }, 1000);
+                        }, 1000);
+                    }
+                }
+                
+                setTimeout(highlightNextRemainder, 1000);
+            }
+            
+            // 나눗셈 과정 시작
+            setTimeout(showNextDivisionStep, 1000);
+        }
+        
+        // 점 패턴 생성 함수
+        function createDotPattern(count, isActive = true) {
+            const patterns = {
+                1: [[1, 1]],
+                2: [[0, 1], [1, 0]],
+                4: [[1, 0, 1], [0, 0, 0], [1, 0, 1]],
+                8: [[1, 1, 1], [1, 0, 1], [1, 1, 1]],
+                16: [[1, 1, 0, 1, 1], [1, 0, 0, 0, 1], [0, 0, 0, 0, 0], [1, 0, 0, 0, 1], [1, 1, 0, 1, 1]],
+                32: [[1, 1, 1, 1, 1], [1, 0, 0, 0, 1], [1, 0, 1, 0, 1], [1, 0, 0, 0, 1], [1, 1, 1, 1, 1]],
+                64: [[1, 1, 1, 1, 1, 1], [1, 0, 1, 1, 0, 1], [1, 0, 0, 0, 0, 1], [1, 0, 1, 1, 0, 1], [1, 1, 1, 1, 1, 1]],
+                128: [[1, 1, 1, 1, 1, 1, 1], [1, 0, 1, 0, 1, 0, 1], [1, 0, 0, 0, 0, 0, 1], [1, 0, 1, 0, 1, 0, 1], [1, 1, 1, 1, 1, 1, 1]]
+            };
+            
+            const pattern = patterns[count] || [[1]];
+            const dotColor = isActive ? 'bg-green-500' : 'bg-gray-300';
+            const cardBg = isActive ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300';
+            
+            let html = `<div class="card-dots ${cardBg} border-2 rounded-lg p-3 min-h-[80px] flex flex-col justify-center">`;
+            
+            for (let row of pattern) {
+                html += '<div class="flex justify-center space-x-1 mb-1">';
+                for (let dot of row) {
+                    if (dot === 1) {
+                        html += `<div class="dot w-2 h-2 ${dotColor} rounded-full"></div>`;
+                    } else {
+                        html += '<div class="w-2 h-2"></div>';
+                    }
+                }
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        // 이진수를 십진수로 변환 (카드 방식만)
+        function convertBinaryToDecimal(binary) {
+            if (!/^[01]+$/.test(binary)) {
+                alert('0과 1로만 이루어진 이진수를 입력해주세요!');
+                return;
+            }
+            
+            const processDiv = document.getElementById('conversion-process');
+            const stepsDiv = document.getElementById('process-steps');
+            const resultDiv = document.getElementById('final-result');
+            const resultText = document.getElementById('result-text');
+            
+            processDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            stepsDiv.innerHTML = '';
+            
+            let decimal = 0;
+            let steps = [];
+            
+            // 각 자리수 계산
+            for (let i = 0; i < binary.length; i++) {
+                const digit = parseInt(binary[binary.length - 1 - i]);
+                const power = i;
+                const value = digit * Math.pow(2, power);
+                decimal += value;
+                
+                steps.push({
+                    position: binary.length - 1 - i,
+                    digit: digit,
+                    power: power,
+                    powerValue: Math.pow(2, power),
+                    value: value
+                });
+            }
+            
+            // 카드 기반 시각화 생성
+            stepsDiv.innerHTML = `
+                <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mb-6">
+                    <h4 class="text-lg font-bold text-gray-800 mb-4 text-center">🃏 이진수 카드로 이해하기</h4>
+                    <p class="text-center text-gray-600 mb-6">각 카드의 점 개수가 그 자리의 값을 나타내요!</p>
+                    <div class="grid gap-4 mb-4" id="binary-cards" style="grid-template-columns: repeat(${binary.length}, 1fr);">
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 rounded-xl p-6 mb-6">
+                    <h4 class="text-lg font-bold text-blue-800 mb-4 text-center">🧮 사용된 카드들의 점 개수 더하기</h4>
+                    <div id="calculation-steps" class="space-y-3">
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 rounded-xl p-6 border-2 border-yellow-200">
+                    <h4 class="text-lg font-bold text-yellow-800 mb-3 text-center">🎯 최종 답</h4>
+                    <div id="final-sum" class="text-center text-xl font-bold">
+                    </div>
+                </div>
+            `;
+            
+            const cardsDiv = document.getElementById('binary-cards');
+            const calculationDiv = document.getElementById('calculation-steps');
+            const finalSumDiv = document.getElementById('final-sum');
+            
+            // 카드들을 순차적으로 표시
+            let cardIndex = 0;
+            function showNextCard() {
+                if (cardIndex < steps.length) {
+                    const step = steps[binary.length - 1 - cardIndex];
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'text-center slide-in';
+                    
+                    const isUsed = step.digit === 1;
+                    cardDiv.innerHTML = `
+                        <div class="mb-2">
+                            <div class="text-lg font-bold ${isUsed ? 'text-green-600' : 'text-gray-500'}">${step.digit}</div>
+                            <div class="text-xs text-gray-500">이진수 자리</div>
+                        </div>
+                        ${createDotPattern(step.powerValue, isUsed)}
+                        <div class="mt-2">
+                            <div class="text-sm font-semibold ${isUsed ? 'text-green-600' : 'text-gray-500'}">${step.powerValue}의 자리</div>
+                            <div class="text-xs text-gray-500">점 ${step.powerValue}개</div>
+                        </div>
+                    `;
+                    
+                    cardsDiv.appendChild(cardDiv);
+                    
+                    // 점들 깜빡이는 효과
+                    if (isUsed) {
+                        setTimeout(() => {
+                            const dots = cardDiv.querySelectorAll('.dot');
+                            dots.forEach((dot, index) => {
+                                setTimeout(() => {
+                                    dot.style.animation = 'pulse 0.5s ease-in-out';
+                                }, index * 50);
+                            });
+                        }, 500);
+                    }
+                    
+                    cardIndex++;
+                    setTimeout(showNextCard, 1000);
+                } else {
+                    // 계산 과정 표시
+                    setTimeout(showCalculationProcess, 1000);
+                }
+            }
+            
+            function showCalculationProcess() {
+                const usedSteps = steps.filter(s => s.digit === 1);
+                
+                if (usedSteps.length === 0) {
+                    calculationDiv.innerHTML = `
+                        <div class="bg-white rounded-lg p-4 border border-gray-200 text-center">
+                            <div class="text-lg text-gray-500">사용된 카드가 없습니다 (모든 자리가 0)</div>
+                        </div>
+                    `;
+                    finalSumDiv.innerHTML = `<div class="text-blue-600">0</div>`;
+                } else {
+                    calculationDiv.innerHTML = `
+                        <div class="bg-white rounded-lg p-4 border border-blue-200">
+                            <div class="text-center mb-4">
+                                <div class="text-lg font-semibold text-blue-800">사용된 카드들 (이진수에서 1인 자리)</div>
+                            </div>
+                            <div class="flex flex-wrap justify-center items-center gap-2">
+                                ${usedSteps.map((step, index) => `
+                                    <span class="inline-flex items-center">
+                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-lg font-bold">점 ${step.powerValue}개</span>
+                                        ${index < usedSteps.length - 1 ? '<span class="mx-2 text-gray-500">+</span>' : ''}
+                                    </span>
+                                `).join('')}
+                                <span class="mx-2 text-gray-500">=</span>
+                                <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg font-bold text-lg">${decimal}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    finalSumDiv.innerHTML = `
+                        <div class="mb-2">
+                            ${usedSteps.map(s => s.powerValue).join(' + ')} = <span class="text-blue-600">${decimal}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">사용된 카드의 점들을 모두 더한 결과예요!</div>
+                    `;
+                }
+                
+                // 최종 결과
+                setTimeout(() => {
+                    resultText.innerHTML = `
+                        <div class="text-2xl font-bold mb-2">
+                            이진수 <span class="text-green-600">${binary}</span> = 십진수 <span class="text-blue-600">${decimal}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            💡 <strong>핵심 포인트:</strong> 이진수에서 1인 자리의 카드만 사용해서 점의 개수를 더하면 십진수가 됩니다!
+                        </div>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.classList.add('success-animation');
+                }, 1500);
+            }
+            
+            showNextCard();
+        }
+        
+        // 개념 완료 표시
+        function markConceptComplete(index) {
+            if (!conceptsCompleted[index]) {
+                conceptsCompleted[index] = true;
+                const btn = document.querySelectorAll('.concept-complete-btn')[index];
+                btn.innerHTML = '✅ 완료!';
+                btn.classList.remove('bg-blue-500', 'hover:bg-blue-600', 'bg-green-500', 'hover:bg-green-600', 'bg-purple-500', 'hover:bg-purple-600');
+                btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btn.disabled = true;
+                
+                updateProgress();
+                
+                const completedCount = conceptsCompleted.filter(c => c).length;
+                if (completedCount === 1) {
+                    showAchievement('첫 번째 개념 학습 완료! 📚');
+                } else if (completedCount === 3) {
+                    showAchievement('모든 개념 학습 완료! 당신은 이진수 마스터입니다! 🎓');
+                }
+            }
+        }
+        
+        // 진행 상황 업데이트
+        function updateProgress() {
+            // 변환기 진행률
+            const converterProgress = Math.min(converterUsageCount / 5 * 100, 100);
+            document.getElementById('converter-progress').style.width = converterProgress + '%';
+            document.getElementById('converter-count').textContent = `${Math.min(converterUsageCount, 5)}/5`;
+            
+            // 개념 학습 진행률
+            const conceptCount = conceptsCompleted.filter(c => c).length;
+            const conceptProgress = conceptCount / 3 * 100;
+            document.getElementById('concept-progress').style.width = conceptProgress + '%';
+            document.getElementById('concept-count').textContent = `${conceptCount}/3`;
+            
+            // 연습문제 진행률
+            const practiceProgress = Math.min(totalProblems / 10 * 100, 100);
+            document.getElementById('practice-progress').style.width = practiceProgress + '%';
+            document.getElementById('practice-count').textContent = `${Math.min(totalProblems, 10)}/10`;
+        }
+        
+        // 난이도 설정
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // 버튼 스타일 업데이트
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.className = 'difficulty-btn bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold';
+            });
+            
+            const activeBtn = document.getElementById(difficulty + '-btn');
+            if (difficulty === 'easy') {
+                activeBtn.className = 'difficulty-btn bg-green-500 text-white px-6 py-3 rounded-lg font-semibold';
+            } else if (difficulty === 'medium') {
+                activeBtn.className = 'difficulty-btn bg-yellow-500 text-white px-6 py-3 rounded-lg font-semibold';
+            } else {
+                activeBtn.className = 'difficulty-btn bg-red-500 text-white px-6 py-3 rounded-lg font-semibold';
+            }
+        }
+        
+        // 문제 생성
+        function generateProblem() {
+            let maxValue;
+            switch(currentDifficulty) {
+                case 'easy': maxValue = 15; break;
+                case 'medium': maxValue = 63; break;
+                case 'hard': maxValue = 255; break;
+            }
+            
+            const problemType = Math.random() < 0.5 ? 'decimal-to-binary' : 'binary-to-decimal';
+            
+            if (problemType === 'decimal-to-binary') {
+                const decimal = Math.floor(Math.random() * (maxValue + 1));
+                const binary = decimal.toString(2);
+                currentProblem = {
+                    type: 'decimal-to-binary',
+                    question: decimal,
+                    answer: binary,
+                    userAnswer: ''
+                };
+            } else {
+                const decimal = Math.floor(Math.random() * (maxValue + 1));
+                const binary = decimal.toString(2);
+                currentProblem = {
+                    type: 'binary-to-decimal',
+                    question: binary,
+                    answer: decimal.toString(),
+                    userAnswer: ''
+                };
+            }
+            
+            displayProblem();
+        }
+        
+        // 문제 표시
+        function displayProblem() {
+            const problemArea = document.getElementById('problem-area');
+            
+            if (currentProblem.type === 'decimal-to-binary') {
+                problemArea.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-3xl sm:text-4xl mb-4">🔢</div>
+                        <h3 class="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">십진수를 이진수로 변환하세요!</h3>
+                        <div class="bg-blue-50 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+                            <div class="text-base sm:text-lg text-gray-700 mb-2">십진수</div>
+                            <div class="text-2xl sm:text-4xl font-bold text-blue-600 mb-4">${currentProblem.question}</div>
+                            <div class="text-base sm:text-lg text-gray-700 mb-2">이진수로 변환하면?</div>
+                            <input type="text" id="answer-input" class="w-full max-w-xs px-4 py-3 text-lg sm:text-2xl text-center border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                            <button onclick="submitAnswer()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105">
+                                정답 제출
+                            </button>
+                            <button onclick="generateProblem()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                                새 문제
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                problemArea.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-3xl sm:text-4xl mb-4">💻</div>
+                        <h3 class="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">이진수를 십진수로 변환하세요!</h3>
+                        <div class="bg-green-50 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+                            <div class="text-base sm:text-lg text-gray-700 mb-2">이진수</div>
+                            <div class="text-2xl sm:text-4xl font-bold text-green-600 mb-4">${currentProblem.question}</div>
+                            <div class="text-base sm:text-lg text-gray-700 mb-2">십진수로 변환하면?</div>
+                            <input type="text" id="answer-input" class="w-full max-w-xs px-4 py-3 text-lg sm:text-2xl text-center border-2 border-green-300 rounded-lg focus:border-green-500 focus:outline-none">
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                            <button onclick="submitAnswer()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105">
+                                정답 제출
+                            </button>
+                            <button onclick="generateProblem()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                                새 문제
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Enter 키로 제출 가능하게
+            document.getElementById('answer-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitAnswer();
+                }
+            });
+        }
+        
+        // 정답 제출
+        function submitAnswer() {
+            const userAnswer = document.getElementById('answer-input').value.trim();
+            if (!userAnswer) {
+                alert('답을 입력해주세요!');
+                return;
+            }
+            
+            currentProblem.userAnswer = userAnswer;
+            const isCorrect = userAnswer === currentProblem.answer;
+            
+            totalProblems++;
+            
+            if (isCorrect) {
+                correctAnswers++;
+                practiceScore += getDifficultyPoints();
+                showFeedback(true);
+            } else {
+                wrongAnswers++;
+                showFeedback(false);
+            }
+            
+            updatePracticeStats();
+            updateProgress();
+            
+            // 성취 확인
+            if (totalProblems === 1) {
+                showAchievement('첫 번째 문제 도전! 🎯');
+            } else if (totalProblems === 5) {
+                showAchievement('5문제 완료! 꾸준히 잘하고 있어요! 💪');
+            } else if (totalProblems === 10) {
+                showAchievement('10문제 완료! 연습문제 마스터! 🏆');
+            }
+            
+            if (correctAnswers === 5) {
+                showAchievement('5문제 연속 정답! 실력이 늘고 있어요! ⭐');
+            }
+        }
+        
+        // 난이도별 점수
+        function getDifficultyPoints() {
+            switch(currentDifficulty) {
+                case 'easy': return 10;
+                case 'medium': return 20;
+                case 'hard': return 30;
+                default: return 10;
+            }
+        }
+        
+        // 피드백 표시
+        function showFeedback(isCorrect) {
+            const problemArea = document.getElementById('problem-area');
+            
+            if (isCorrect) {
+                problemArea.innerHTML = `
+                    <div class="text-center success-animation">
+                        <div class="text-4xl sm:text-6xl mb-4">🎉</div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-green-600 mb-4">정답입니다!</h3>
+                        <div class="bg-green-50 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border-2 border-green-200">
+                            <div class="text-base sm:text-lg mb-4">
+                                ${currentProblem.type === 'decimal-to-binary' ? 
+                                    `십진수 <span class="font-bold text-blue-600">${currentProblem.question}</span> = 이진수 <span class="font-bold text-green-600">${currentProblem.answer}</span>` :
+                                    `이진수 <span class="font-bold text-green-600">${currentProblem.question}</span> = 십진수 <span class="font-bold text-blue-600">${currentProblem.answer}</span>`
+                                }
+                            </div>
+                            <div class="text-green-600 font-semibold text-sm sm:text-base">+${getDifficultyPoints()}점 획득!</div>
+                        </div>
+                        <button onclick="generateProblem()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105">
+                            다음 문제
+                        </button>
+                    </div>
+                `;
+            } else {
+                problemArea.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl sm:text-6xl mb-4">😅</div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-red-600 mb-4">틀렸습니다!</h3>
+                        <div class="bg-red-50 rounded-xl p-4 sm:p-6 mb-4 sm:mb-6 border-2 border-red-200">
+                            <div class="text-base sm:text-lg mb-2">
+                                <span class="text-gray-600">당신의 답:</span> <span class="font-bold text-red-600">${currentProblem.userAnswer}</span>
+                            </div>
+                            <div class="text-base sm:text-lg mb-4">
+                                <span class="text-gray-600">정답:</span> <span class="font-bold text-green-600">${currentProblem.answer}</span>
+                            </div>
+                            <div class="text-base sm:text-lg">
+                                ${currentProblem.type === 'decimal-to-binary' ? 
+                                    `십진수 <span class="font-bold text-blue-600">${currentProblem.question}</span> = 이진수 <span class="font-bold text-green-600">${currentProblem.answer}</span>` :
+                                    `이진수 <span class="font-bold text-green-600">${currentProblem.question}</span> = 십진수 <span class="font-bold text-blue-600">${currentProblem.answer}</span>`
+                                }
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                            <button onclick="generateProblem()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg transition-all transform hover:scale-105">
+                                다음 문제
+                            </button>
+                            <button onclick="showSection('converter')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base">
+                                변환기로 연습하기
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // 연습문제 통계 업데이트
+        function updatePracticeStats() {
+            document.getElementById('score-display').textContent = practiceScore;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('wrong-count').textContent = wrongAnswers;
+        }
+        
+        // 성취 알림 표시
+        function showAchievement(message) {
+            document.getElementById('achievement-text').textContent = message;
+            document.getElementById('achievement-modal').classList.remove('hidden');
+        }
+        
+        // 성취 알림 닫기
+        function closeAchievementModal() {
+            document.getElementById('achievement-modal').classList.add('hidden');
+        }
+        
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            setConversionType('decimal-to-binary');
+            setMethod('cards');
+            setDifficulty('easy');
+            updateProgress();
+            updatePracticeStats();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97521f0fb1fdd1d9',t:'MTc1NjE5ODY0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
