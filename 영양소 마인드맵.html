@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영양소 마인드맵</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .student-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .info-input {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            min-width: 150px;
+            transition: border-color 0.3s ease;
+        }
+
+        .info-input:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .save-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .mindmap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .central-node {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(66, 153, 225, 0.3);
+            position: relative;
+        }
+
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .branch {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .branch:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #4299e1;
+        }
+
+        .branch-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 10px;
+        }
+
+        .nutrient-list {
+            min-height: 200px;
+        }
+
+        .nutrient-item {
+            background: #f8f9fa;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .nutrient-item:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .nutrient-name {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .nutrient-name:focus {
+            outline: none;
+            border-bottom-color: #4299e1;
+        }
+
+        .nutrient-function, .nutrient-sources {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #4a5568;
+            resize: vertical;
+            min-height: 50px;
+            padding: 5px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nutrient-function:focus, .nutrient-sources:focus {
+            outline: none;
+            border-bottom-color: #4299e1;
+        }
+
+        .add-nutrient-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .add-nutrient-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+        }
+
+        .nutrient-item:hover .remove-btn {
+            display: block;
+        }
+
+        .branch-colors {
+            --color1: #ff6b6b;
+            --color2: #4ecdc4;
+            --color3: #45b7d1;
+            --color4: #96ceb4;
+            --color5: #feca57;
+            --color6: #ff9ff3;
+        }
+
+        .branch:nth-child(1) { border-color: var(--color1); }
+        .branch:nth-child(2) { border-color: var(--color2); }
+        .branch:nth-child(3) { border-color: var(--color3); }
+
+        .branch:nth-child(1) .branch-title { background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; }
+        .branch:nth-child(2) .branch-title { background: linear-gradient(135deg, #4ecdc4, #44a08d); color: white; }
+        .branch:nth-child(3) .branch-title { background: linear-gradient(135deg, #45b7d1, #3498db); color: white; }
+
+        @media (max-width: 768px) {
+            .branches {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍎 영양소 마인드맵 🥕</h1>
+            <p>영양소의 종류와 특징을 직접 입력하여 나만의 마인드맵을 완성해보세요!</p>
+            
+            <div class="student-info">
+                <input type="text" id="studentId" class="info-input" placeholder="학번을 입력하세요">
+                <input type="text" id="studentName" class="info-input" placeholder="이름을 입력하세요">
+                <button class="save-btn" onclick="saveAsImage()">📷 이미지로 저장</button>
+            </div>
+        </div>
+
+        <div class="mindmap">
+            <div class="central-node">
+                영양소 (Nutrients)
+            </div>
+
+            <div class="branches">
+                <div class="branch">
+                    <div class="branch-title">1. 에너지 공급</div>
+                    <div class="nutrient-list" data-category="energy">
+                        <div class="nutrient-item">
+                            <input type="text" class="nutrient-name" placeholder="영양소 이름을 입력하세요">
+                            <textarea class="nutrient-function" placeholder="주요 기능을 입력하세요&#10;예: 신체 활동에 필요한 에너지 제공"></textarea>
+                            <textarea class="nutrient-sources" placeholder="급원 음식을 입력하세요&#10;예: 쌀, 빵, 감자, 과일 등"></textarea>
+                            <button class="remove-btn" onclick="removeNutrient(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="add-nutrient-btn" onclick="addNutrient('energy')">+ 영양소 추가</button>
+                </div>
+
+                <div class="branch">
+                    <div class="branch-title">2. 신체 조직 구성</div>
+                    <div class="nutrient-list" data-category="structure">
+                        <div class="nutrient-item">
+                            <input type="text" class="nutrient-name" placeholder="영양소 이름을 입력하세요">
+                            <textarea class="nutrient-function" placeholder="주요 기능을 입력하세요&#10;예: 근육, 뼈, 혈액 등 신체 조직 형성"></textarea>
+                            <textarea class="nutrient-sources" placeholder="급원 음식을 입력하세요&#10;예: 고기, 생선, 달걀, 콩 등"></textarea>
+                            <button class="remove-btn" onclick="removeNutrient(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="add-nutrient-btn" onclick="addNutrient('structure')">+ 영양소 추가</button>
+                </div>
+
+                <div class="branch">
+                    <div class="branch-title">3. 생리 기능 조절</div>
+                    <div class="nutrient-list" data-category="regulation">
+                        <div class="nutrient-item">
+                            <input type="text" class="nutrient-name" placeholder="영양소 이름을 입력하세요">
+                            <textarea class="nutrient-function" placeholder="주요 기능을 입력하세요&#10;예: 신진대사 조절, 면역력 강화"></textarea>
+                            <textarea class="nutrient-sources" placeholder="급원 음식을 입력하세요&#10;예: 채소, 과일, 우유, 견과류 등"></textarea>
+                            <button class="remove-btn" onclick="removeNutrient(this)">×</button>
+                        </div>
+                    </div>
+                    <button class="add-nutrient-btn" onclick="addNutrient('regulation')">+ 영양소 추가</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function saveAsImage() {
+            const studentId = document.getElementById('studentId').value.trim();
+            const studentName = document.getElementById('studentName').value.trim();
+            
+            if (!studentId || !studentName) {
+                alert('학번과 이름을 모두 입력해주세요!');
+                return;
+            }
+            
+            const saveBtn = document.querySelector('.save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '저장 중...';
+            
+            // 마인드맵 영역만 캡처
+            const mindmapElement = document.querySelector('.mindmap');
+            
+            html2canvas(mindmapElement, {
+                backgroundColor: '#ffffff',
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                width: mindmapElement.scrollWidth,
+                height: mindmapElement.scrollHeight
+            }).then(canvas => {
+                // 캔버스를 이미지로 변환
+                const link = document.createElement('a');
+                link.download = `${studentId}_${studentName}_영양소마인드맵.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // 버튼 상태 복원
+                saveBtn.disabled = false;
+                saveBtn.textContent = '📷 이미지로 저장';
+                
+                alert('마인드맵이 성공적으로 저장되었습니다!');
+            }).catch(error => {
+                console.error('이미지 저장 중 오류가 발생했습니다:', error);
+                alert('이미지 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+                
+                // 버튼 상태 복원
+                saveBtn.disabled = false;
+                saveBtn.textContent = '📷 이미지로 저장';
+            });
+        }
+
+        function addNutrient(category) {
+            const nutrientList = document.querySelector(`[data-category="${category}"]`);
+            const newItem = document.createElement('div');
+            newItem.className = 'nutrient-item';
+            newItem.innerHTML = `
+                <input type="text" class="nutrient-name" placeholder="영양소 이름을 입력하세요">
+                <textarea class="nutrient-function" placeholder="주요 기능을 입력하세요&#10;예: 신체에서 하는 역할과 기능"></textarea>
+                <textarea class="nutrient-sources" placeholder="급원 음식을 입력하세요&#10;예: 해당 영양소가 풍부한 음식들"></textarea>
+                <button class="remove-btn" onclick="removeNutrient(this)">×</button>
+            `;
+            
+            nutrientList.appendChild(newItem);
+            
+            // 새로 추가된 입력 필드에 포커스
+            const nameInput = newItem.querySelector('.nutrient-name');
+            nameInput.focus();
+            
+            // 부드러운 애니메이션 효과
+            newItem.style.opacity = '0';
+            newItem.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                newItem.style.transition = 'all 0.3s ease';
+                newItem.style.opacity = '1';
+                newItem.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function removeNutrient(button) {
+            const nutrientItem = button.parentElement;
+            const nutrientList = nutrientItem.parentElement;
+            
+            // 최소 하나의 항목은 유지
+            if (nutrientList.children.length > 1) {
+                nutrientItem.style.transition = 'all 0.3s ease';
+                nutrientItem.style.opacity = '0';
+                nutrientItem.style.transform = 'translateX(20px)';
+                
+                setTimeout(() => {
+                    nutrientItem.remove();
+                }, 300);
+            } else {
+                // 마지막 항목인 경우 내용만 초기화
+                const nameInput = nutrientItem.querySelector('.nutrient-name');
+                const functionTextarea = nutrientItem.querySelector('.nutrient-function');
+                const sourcesTextarea = nutrientItem.querySelector('.nutrient-sources');
+                nameInput.value = '';
+                functionTextarea.value = '';
+                sourcesTextarea.value = '';
+                nameInput.focus();
+            }
+        }
+
+        // 자동 높이 조절 기능
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('nutrient-function') || e.target.classList.contains('nutrient-sources')) {
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.max(50, e.target.scrollHeight) + 'px';
+            }
+        });
+
+        // 엔터키로 새 항목 추가 (이름 입력 필드에서)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('nutrient-name')) {
+                e.preventDefault();
+                const branch = e.target.closest('.branch');
+                const category = branch.querySelector('.nutrient-list').dataset.category;
+                addNutrient(category);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975183a9e71cc093',t:'MTc1NjE5MjI3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
