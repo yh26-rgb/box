@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알고리즘 놀이터 🎮</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+            to { box-shadow: 0 0 30px rgba(255, 255, 255, 0.6); }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- 메인 화면 -->
+    <div id="mainScreen" class="min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- 헤더 -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4 bounce">
+                🎮 알고리즘 놀이터 🎮
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 mb-2">
+                정렬과 탐색 알고리즘을 재미있게 배워보자!
+            </p>
+            <div class="text-6xl float mb-6">🚀</div>
+            
+            <!-- 상단 버튼들 -->
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button onclick="showTutorial()" class="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 flex items-center gap-2">
+                    <span>📚</span> 사용법 보기
+                </button>
+                <button onclick="showQuiz()" class="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 flex items-center gap-2">
+                    <span>🧠</span> 퀴즈 풀기
+                </button>
+            </div>
+        </div>
+
+        <!-- 알고리즘 선택 카드들 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
+            <!-- 버블정렬 카드 -->
+            <div class="card-hover bg-gradient-to-br from-pink-400 to-red-400 rounded-3xl p-8 text-white cursor-pointer pulse-glow" onclick="selectAlgorithm('bubble')">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🫧</div>
+                    <h3 class="text-2xl font-bold mb-3">버블정렬</h3>
+                    <p class="text-lg opacity-90 mb-4">
+                        거품이 물 위로 올라오듯<br>
+                        큰 수가 뒤로 이동해요!
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">3</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">1</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">4</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 선택정렬 카드 -->
+            <div class="card-hover bg-gradient-to-br from-blue-400 to-purple-400 rounded-3xl p-8 text-white cursor-pointer pulse-glow" onclick="selectAlgorithm('selection')">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🎯</div>
+                    <h3 class="text-2xl font-bold mb-3">선택정렬</h3>
+                    <p class="text-lg opacity-90 mb-4">
+                        가장 작은 수를 찾아서<br>
+                        앞자리에 배치해요!
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">5</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">2</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">8</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 순차탐색 카드 -->
+            <div class="card-hover bg-gradient-to-br from-green-400 to-teal-400 rounded-3xl p-8 text-white cursor-pointer pulse-glow" onclick="selectAlgorithm('linear')">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🔍</div>
+                    <h3 class="text-2xl font-bold mb-3">순차탐색</h3>
+                    <p class="text-lg opacity-90 mb-4">
+                        처음부터 끝까지 하나씩<br>
+                        차근차근 찾아가요!
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">7</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">3</div>
+                        <div class="w-8 h-8 bg-white/50 rounded-lg flex items-center justify-center text-sm font-bold">9</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 이진탐색 카드 -->
+            <div class="card-hover bg-gradient-to-br from-yellow-400 to-orange-400 rounded-3xl p-8 text-white cursor-pointer pulse-glow" onclick="selectAlgorithm('binary')">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">⚡</div>
+                    <h3 class="text-2xl font-bold mb-3">이진탐색</h3>
+                    <p class="text-lg opacity-90 mb-4">
+                        반으로 나누어 가면서<br>
+                        빠르게 찾아가요!
+                    </p>
+                    <div class="flex justify-center space-x-2">
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">1</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">3</div>
+                        <div class="w-8 h-8 bg-white/50 rounded-lg flex items-center justify-center text-sm font-bold">5</div>
+                        <div class="w-8 h-8 bg-white/30 rounded-lg flex items-center justify-center text-sm font-bold">7</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 시뮬레이션 화면 -->
+    <div id="simulationScreen" class="hidden min-h-screen bg-white p-4">
+        <!-- 헤더 -->
+        <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span id="algorithmIcon" class="text-4xl">🫧</span>
+                    <div>
+                        <h1 id="algorithmTitle" class="text-3xl font-bold">버블정렬</h1>
+                        <p id="algorithmDesc" class="text-lg opacity-90">인접한 두 원소를 비교하여 큰 수를 뒤로 보냅니다</p>
+                    </div>
+                </div>
+                <button onclick="goHome()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all duration-300">
+                    🏠 홈으로
+                </button>
+            </div>
+        </div>
+
+        <!-- 데이터 입력 섹션 -->
+        <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">📝 데이터 입력</h3>
+            <div class="flex flex-wrap gap-4 items-end">
+                <div class="flex-1 min-w-64">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">숫자를 쉼표로 구분해서 입력하세요</label>
+                    <input type="text" id="dataInput" placeholder="예: 5,2,8,1,9,3" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                </div>
+                <button onclick="generateRandomData()" class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
+                    🎲 랜덤 생성
+                </button>
+                <button onclick="setData()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300">
+                    ✅ 설정하기
+                </button>
+            </div>
+            
+            <!-- 정렬 방향 선택 (정렬 알고리즘용) -->
+            <div id="sortOrderSection" class="hidden mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">정렬 방향을 선택하세요</label>
+                <div class="flex gap-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="sortOrder" value="asc" checked class="mr-2 text-purple-500 focus:ring-purple-500">
+                        <span class="text-gray-700">🔼 오름차순 (작은 수 → 큰 수)</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="sortOrder" value="desc" class="mr-2 text-purple-500 focus:ring-purple-500">
+                        <span class="text-gray-700">🔽 내림차순 (큰 수 → 작은 수)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 탐색 알고리즘용 검색 입력 -->
+            <div id="searchSection" class="hidden mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">찾을 숫자를 입력하세요</label>
+                <input type="number" id="searchInput" placeholder="찾을 숫자" 
+                       class="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+        </div>
+
+        <!-- 시각화 섹션 -->
+        <div class="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">👀 시각화</h3>
+            <div id="dataVisualization" class="flex flex-wrap gap-6 justify-center min-h-32 items-center pt-8 pb-16">
+                <p class="text-gray-500">데이터를 입력하고 설정하기 버튼을 눌러주세요!</p>
+            </div>
+        </div>
+
+        <!-- 제어 버튼들 -->
+        <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">🎮 제어</h3>
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button id="playBtn" onclick="startSimulation()" disabled 
+                        class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    ▶️ 시작
+                </button>
+                <button id="pauseBtn" onclick="pauseSimulation()" disabled 
+                        class="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    ⏸️ 일시정지
+                </button>
+                <button id="resetBtn" onclick="resetSimulation()" disabled 
+                        class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    🔄 초기화
+                </button>
+                <button id="stepBtn" onclick="nextStep()" disabled 
+                        class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    👆 한 단계
+                </button>
+            </div>
+        </div>
+
+        <!-- 진행 상황 -->
+        <div class="bg-white border-2 border-gray-200 rounded-2xl p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">📊 진행 상황</h3>
+            <div class="mb-4">
+                <div class="bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="mt-4 bg-yellow-50 rounded-lg p-4">
+                <h4 class="font-bold text-gray-800 mb-2">💡 설명</h4>
+                <p id="explanation" class="text-gray-600">알고리즘을 선택하고 데이터를 입력하면 단계별 설명이 나타납니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 튜토리얼 모달 -->
+    <div id="tutorialModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-3xl p-8 max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="text-center mb-6">
+                <div class="text-6xl mb-4">📚</div>
+                <h3 class="text-3xl font-bold text-gray-800">알고리즘 놀이터 사용법</h3>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">1️⃣</div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">알고리즘 선택하기</h4>
+                        <p class="text-gray-600">메인 화면에서 배우고 싶은 알고리즘 카드를 클릭해주세요!</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">2️⃣</div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">데이터 입력하기</h4>
+                        <p class="text-gray-600">숫자를 직접 입력하거나 랜덤 생성 버튼을 눌러보세요!</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">3️⃣</div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">시뮬레이션 보기</h4>
+                        <p class="text-gray-600">재생 버튼을 눌러 알고리즘이 어떻게 작동하는지 확인해보세요!</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">4️⃣</div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">퀴즈 풀기</h4>
+                        <p class="text-gray-600">알고리즘을 배운 후 퀴즈를 풀어서 실력을 확인해보세요!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button onclick="closeTutorial()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300">
+                    시작하기! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 퀴즈 모달 -->
+    <div id="quizModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-3xl p-8 max-w-3xl mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="text-center mb-6">
+                <div class="text-6xl mb-4">🧠</div>
+                <h3 class="text-3xl font-bold text-gray-800">알고리즘 퀴즈</h3>
+                <p class="text-gray-600 mt-2">배운 내용을 확인해보세요!</p>
+            </div>
+            
+            <!-- 퀴즈 진행 상황 -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-600">진행 상황</span>
+                    <span id="quizProgress" class="text-sm font-medium text-purple-600">1 / 5</span>
+                </div>
+                <div class="bg-gray-200 rounded-full h-2">
+                    <div id="quizProgressBar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500" style="width: 20%"></div>
+                </div>
+            </div>
+            
+            <!-- 퀴즈 내용 -->
+            <div id="quizContent" class="mb-8">
+                <!-- 퀴즈 문제가 여기에 동적으로 표시됩니다 -->
+            </div>
+            
+            <!-- 퀴즈 결과 -->
+            <div id="quizResult" class="hidden text-center">
+                <div class="text-6xl mb-4" id="resultEmoji">🎉</div>
+                <h4 class="text-2xl font-bold text-gray-800 mb-4" id="resultTitle">퀴즈 완료!</h4>
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
+                    <div class="text-4xl font-bold text-purple-600 mb-2" id="finalScore">5 / 5</div>
+                    <p class="text-gray-600" id="scoreMessage">완벽해요! 알고리즘 마스터!</p>
+                </div>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="restartQuiz()" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300">
+                        🔄 다시 풀기
+                    </button>
+                    <button onclick="closeQuiz()" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300">
+                        ✅ 완료
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 퀴즈 제어 버튼 -->
+            <div id="quizControls" class="text-center">
+                <button onclick="closeQuiz()" class="bg-gray-500 text-white px-6 py-3 rounded-full font-medium hover:bg-gray-600 transition-all duration-300">
+                    ❌ 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수들
+        let currentAlgorithm = '';
+        let originalData = [];
+        let currentData = [];
+        let isRunning = false;
+        let currentStep = 0;
+        let totalSteps = 0;
+        let animationSpeed = 1000;
+        let searchTarget = null;
+        
+        // 정렬 방향 확인 함수
+        function getSortOrder() {
+            const sortOrderRadios = document.getElementsByName('sortOrder');
+            for (let radio of sortOrderRadios) {
+                if (radio.checked) {
+                    return radio.value;
+                }
+            }
+            return 'asc'; // 기본값
+        }
+
+        // 알고리즘 선택 함수
+        function selectAlgorithm(type) {
+            currentAlgorithm = type;
+            
+            // 메인 화면 숨기고 시뮬레이션 화면 보이기
+            document.getElementById('mainScreen').classList.add('hidden');
+            document.getElementById('simulationScreen').classList.remove('hidden');
+            
+            // 알고리즘별 UI 설정
+            const algorithmInfo = {
+                'bubble': {
+                    title: '🫧 버블정렬',
+                    desc: '인접한 두 원소를 비교하여 큰 수를 뒤로 보냅니다',
+                    icon: '🫧'
+                },
+                'selection': {
+                    title: '🎯 선택정렬',
+                    desc: '가장 작은 원소를 찾아서 앞자리에 배치합니다',
+                    icon: '🎯'
+                },
+                'linear': {
+                    title: '🔍 순차탐색',
+                    desc: '정렬되지 않은 데이터에서도 처음부터 끝까지 하나씩 확인하여 원소를 찾습니다',
+                    icon: '🔍'
+                },
+                'binary': {
+                    title: '⚡ 이진탐색',
+                    desc: '⚠️ 정렬된 배열에서만 사용 가능! 반으로 나누어 빠르게 원소를 찾습니다',
+                    icon: '⚡'
+                }
+            };
+            
+            const info = algorithmInfo[type];
+            document.getElementById('algorithmTitle').textContent = info.title;
+            document.getElementById('algorithmDesc').textContent = info.desc;
+            document.getElementById('algorithmIcon').textContent = info.icon;
+            
+            // 정렬 알고리즘인 경우 정렬 방향 선택 표시
+            const sortOrderSection = document.getElementById('sortOrderSection');
+            if (type === 'bubble' || type === 'selection') {
+                sortOrderSection.classList.remove('hidden');
+            } else {
+                sortOrderSection.classList.add('hidden');
+            }
+            
+            // 탐색 알고리즘인 경우 검색 입력 필드 표시
+            const searchSection = document.getElementById('searchSection');
+            if (type === 'linear' || type === 'binary') {
+                searchSection.classList.remove('hidden');
+            } else {
+                searchSection.classList.add('hidden');
+            }
+            
+            // 초기화
+            resetSimulation();
+        }
+        
+        // 홈으로 돌아가기
+        function goHome() {
+            document.getElementById('simulationScreen').classList.add('hidden');
+            document.getElementById('mainScreen').classList.remove('hidden');
+            resetSimulation();
+        }
+
+        // 랜덤 데이터 생성
+        function generateRandomData() {
+            const count = Math.floor(Math.random() * 6) + 5; // 5-10개
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                data.push(Math.floor(Math.random() * 50) + 1); // 1-50
+            }
+            document.getElementById('dataInput').value = data.join(',');
+        }
+
+        // 데이터 설정
+        function setData() {
+            const input = document.getElementById('dataInput').value.trim();
+            if (!input) {
+                alert('데이터를 입력해주세요!');
+                return;
+            }
+
+            try {
+                const data = input.split(',').map(num => {
+                    const parsed = parseInt(num.trim());
+                    if (isNaN(parsed)) throw new Error('숫자가 아닙니다');
+                    return parsed;
+                });
+
+                if (data.length < 2) {
+                    alert('최소 2개 이상의 숫자를 입력해주세요!');
+                    return;
+                }
+
+                originalData = [...data];
+                currentData = [...data];
+                
+                // 탐색 알고리즘의 경우 검색 대상 설정
+                if (currentAlgorithm === 'linear' || currentAlgorithm === 'binary') {
+                    const searchInput = document.getElementById('searchInput').value.trim();
+                    
+                    // 검색할 숫자가 입력되지 않은 경우 데이터에서 랜덤 선택
+                    if (!searchInput) {
+                        const randomIndex = Math.floor(Math.random() * data.length);
+                        searchTarget = data[randomIndex];
+                        document.getElementById('searchInput').value = searchTarget;
+                        updateStepInfo(`검색할 숫자를 자동으로 ${searchTarget}으로 설정했습니다!`);
+                    } else {
+                        const searchValue = parseInt(searchInput);
+                        if (isNaN(searchValue)) {
+                            alert('찾을 숫자를 올바르게 입력해주세요!');
+                            return;
+                        }
+                        searchTarget = searchValue;
+                    }
+                    
+                    // 이진탐색의 경우 데이터를 미리 정렬
+                    if (currentAlgorithm === 'binary') {
+                        const originalOrder = [...currentData];
+                        currentData.sort((a, b) => a - b);
+                        originalData = [...currentData]; // 정렬된 상태를 원본으로 저장
+                        
+                        // 정렬 안내 메시지
+                        updateStepInfo(`이진탐색을 위해 데이터를 정렬했습니다: [${originalOrder.join(',')}] → [${currentData.join(',')}]`);
+                    }
+                }
+
+                // 항상 시각화 업데이트
+                visualizeData();
+                enableControls();
+                
+                if (currentAlgorithm === 'linear' || currentAlgorithm === 'binary') {
+                    if (!document.getElementById('searchInput').value.trim()) {
+                        updateStepInfo(`데이터가 설정되었습니다. ${searchTarget}을 찾아보세요!`);
+                    } else {
+                        updateStepInfo(`데이터가 설정되었습니다. ${searchTarget}을 찾아보세요!`);
+                    }
+                } else {
+                    updateStepInfo('데이터가 설정되었습니다. 시뮬레이션을 시작해보세요!');
+                }
+                updateProgressBar(0);
+                
+            } catch (error) {
+                alert('올바른 숫자 형식으로 입력해주세요! (예: 5,2,8,1,9)');
+            }
+        }
+
+        // 데이터 시각화 (개선된 버전)
+        function visualizeData(animateChanges = false) {
+            const container = document.getElementById('dataVisualization');
+            container.innerHTML = '';
+
+            currentData.forEach((value, index) => {
+                const blockWrapper = document.createElement('div');
+                blockWrapper.className = 'block-wrapper relative flex flex-col items-center';
+                blockWrapper.style.position = 'relative';
+                blockWrapper.style.transition = 'transform 0.6s ease-in-out';
+                blockWrapper.id = `wrapper-${index}`;
+                
+                // 인덱스 표시
+                const indexLabel = document.createElement('div');
+                indexLabel.className = 'text-sm text-gray-600 font-bold mb-2 bg-gray-100 px-2 py-1 rounded-full';
+                indexLabel.textContent = `[${index}]`;
+                
+                // 메인 블록
+                const block = document.createElement('div');
+                block.className = 'data-block bg-gradient-to-br from-blue-400 to-purple-500 text-white rounded-xl p-4 min-w-16 text-center font-bold text-xl shadow-lg transition-all duration-500 hover:scale-105 relative';
+                block.textContent = value;
+                block.id = `block-${index}`;
+                
+                // 값 크기 표시 (숫자 아래 작은 바)
+                const valueIndicator = document.createElement('div');
+                valueIndicator.className = 'absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white/30 rounded-full';
+                const maxValue = Math.max(...currentData);
+                const minValue = Math.min(...currentData);
+                const normalizedValue = maxValue === minValue ? 0.5 : (value - minValue) / (maxValue - minValue);
+                valueIndicator.style.width = `${Math.max(20, normalizedValue * 40)}px`;
+                valueIndicator.style.height = '4px';
+                
+                // 값 표시 (블록 위에)
+                const valueLabel = document.createElement('div');
+                valueLabel.className = 'text-xs text-gray-500 font-medium mb-1';
+                valueLabel.textContent = `값: ${value}`;
+                
+                block.appendChild(valueIndicator);
+                blockWrapper.appendChild(indexLabel);
+                blockWrapper.appendChild(valueLabel);
+                blockWrapper.appendChild(block);
+                
+                // 애니메이션 효과
+                if (animateChanges) {
+                    blockWrapper.style.opacity = '0';
+                    blockWrapper.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        blockWrapper.style.opacity = '1';
+                        blockWrapper.style.transform = 'translateY(0)';
+                    }, index * 100);
+                }
+                
+                container.appendChild(blockWrapper);
+            });
+        }
+
+        // 두 블록의 위치를 시각적으로 교환하는 함수
+        async function animateSwap(index1, index2) {
+            const wrapper1 = document.getElementById(`wrapper-${index1}`);
+            const wrapper2 = document.getElementById(`wrapper-${index2}`);
+            
+            if (!wrapper1 || !wrapper2) return;
+
+            // 두 블록의 현재 위치 계산
+            const rect1 = wrapper1.getBoundingClientRect();
+            const rect2 = wrapper2.getBoundingClientRect();
+            const distance = rect2.left - rect1.left;
+
+            // z-index 설정으로 겹침 방지
+            wrapper1.style.zIndex = '20';
+            wrapper2.style.zIndex = '20';
+
+            // 교환 애니메이션 실행 (한 번만)
+            wrapper1.style.transition = 'transform 0.6s ease-in-out';
+            wrapper2.style.transition = 'transform 0.6s ease-in-out';
+            wrapper1.style.transform = `translateX(${distance}px) translateY(-20px)`;
+            wrapper2.style.transform = `translateX(${-distance}px) translateY(-20px)`;
+
+            // 애니메이션 완료 대기
+            await sleep(600);
+
+            // 실제 DOM 요소들의 내용 교환
+            const temp1Content = wrapper1.innerHTML;
+            const temp1Id = wrapper1.id;
+            
+            wrapper1.innerHTML = wrapper2.innerHTML;
+            wrapper1.id = wrapper2.id;
+            wrapper2.innerHTML = temp1Content;
+            wrapper2.id = temp1Id;
+
+            // ID 업데이트
+            const block1 = wrapper1.querySelector('.data-block');
+            const block2 = wrapper2.querySelector('.data-block');
+            if (block1) block1.id = `block-${index1}`;
+            if (block2) block2.id = `block-${index2}`;
+
+            // 위치 초기화 (transition 제거 후)
+            wrapper1.style.transition = '';
+            wrapper2.style.transition = '';
+            wrapper1.style.transform = '';
+            wrapper2.style.transform = '';
+            wrapper1.style.zIndex = '1';
+            wrapper2.style.zIndex = '1';
+
+            await sleep(100);
+        }
+
+        // 제어 버튼 활성화
+        function enableControls() {
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('resetBtn').disabled = false;
+            document.getElementById('stepBtn').disabled = false;
+        }
+
+        // 제어 버튼 비활성화
+        function disableControls() {
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('resetBtn').disabled = true;
+            document.getElementById('stepBtn').disabled = true;
+        }
+        
+        // 튜토리얼 표시
+        function showTutorial() {
+            document.getElementById('tutorialModal').classList.remove('hidden');
+            document.getElementById('tutorialModal').classList.add('flex');
+        }
+        
+        function closeTutorial() {
+            document.getElementById('tutorialModal').classList.add('hidden');
+            document.getElementById('tutorialModal').classList.remove('flex');
+        }
+
+        // 퀴즈 관련 변수들
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizQuestions = [];
+
+        // 퀴즈 문제 데이터
+        const allQuizQuestions = [
+            {
+                question: "버블정렬에서 인접한 두 원소를 비교할 때, 큰 수가 뒤로 이동하는 과정을 무엇에 비유했나요?",
+                options: ["거품이 물 위로 올라오는 것", "돌이 바닥으로 가라앉는 것", "바람이 부는 것", "물이 흐르는 것"],
+                correct: 0,
+                explanation: "버블정렬은 거품(bubble)이 물 위로 올라오듯이 큰 수가 뒤로 이동하는 모습에서 이름이 붙었어요! 🫧"
+            },
+            {
+                question: "선택정렬의 핵심 아이디어는 무엇인가요?",
+                options: ["인접한 원소끼리 비교하기", "가장 작은(또는 큰) 원소를 찾아서 앞자리에 배치하기", "배열을 반으로 나누기", "무작위로 원소 선택하기"],
+                correct: 1,
+                explanation: "선택정렬은 매번 가장 작은(또는 큰) 원소를 '선택'해서 정렬된 부분의 맨 뒤에 배치하는 알고리즘이에요! 🎯"
+            },
+            {
+                question: "다음 중 이진탐색을 사용할 수 없는 경우는?",
+                options: ["정렬된 배열", "정렬되지 않은 배열", "크기가 큰 배열", "숫자로만 이루어진 배열"],
+                correct: 1,
+                explanation: "이진탐색은 반드시 정렬된 배열에서만 사용할 수 있어요! 정렬되지 않은 배열에서는 순차탐색을 사용해야 합니다. ⚡"
+            },
+            {
+                question: "순차탐색의 장점은 무엇인가요?",
+                options: ["가장 빠른 탐색 속도", "정렬된 데이터에서만 사용 가능", "정렬되지 않은 데이터에서도 사용 가능", "메모리를 적게 사용"],
+                correct: 2,
+                explanation: "순차탐색은 데이터가 정렬되어 있지 않아도 사용할 수 있는 것이 가장 큰 장점이에요! 🔍"
+            },
+            {
+                question: "배열 [64, 34, 25, 12, 22, 11, 90]에서 버블정렬로 오름차순 정렬할 때, 첫 번째 패스(pass) 후 가장 뒤에 올 숫자는?",
+                options: ["11", "64", "90", "34"],
+                correct: 2,
+                explanation: "버블정렬에서 첫 번째 패스가 끝나면 가장 큰 수인 90이 맨 뒤로 이동해요! 🫧"
+            },
+            {
+                question: "이진탐색에서 배열을 반으로 나누는 이유는?",
+                options: ["메모리를 절약하기 위해", "탐색 범위를 절반씩 줄여서 빠르게 찾기 위해", "정렬을 위해", "무작위성을 위해"],
+                correct: 1,
+                explanation: "이진탐색은 매번 탐색 범위를 절반으로 줄여서 O(log n)의 빠른 속도로 원소를 찾을 수 있어요! ⚡"
+            },
+            {
+                question: "선택정렬에서 배열 [5, 2, 8, 1, 9]를 오름차순으로 정렬할 때, 첫 번째 단계에서 선택될 숫자는?",
+                options: ["5", "2", "1", "9"],
+                correct: 2,
+                explanation: "선택정렬에서는 매번 가장 작은 수를 선택하므로, 첫 번째 단계에서는 1이 선택되어 맨 앞으로 이동해요! 🎯"
+            },
+            {
+                question: "다음 중 정렬 알고리즘이 아닌 것은?",
+                options: ["버블정렬", "선택정렬", "순차탐색", "삽입정렬"],
+                correct: 2,
+                explanation: "순차탐색은 정렬 알고리즘이 아니라 탐색 알고리즘이에요! 배열에서 특정 값을 찾는 데 사용됩니다. 🔍"
+            }
+        ];
+
+        // 퀴즈 표시
+        function showQuiz() {
+            // 랜덤하게 5개 문제 선택
+            const shuffled = [...allQuizQuestions].sort(() => 0.5 - Math.random());
+            quizQuestions = shuffled.slice(0, 5);
+            
+            currentQuizIndex = 0;
+            quizScore = 0;
+            
+            document.getElementById('quizModal').classList.remove('hidden');
+            document.getElementById('quizModal').classList.add('flex');
+            document.getElementById('quizResult').classList.add('hidden');
+            document.getElementById('quizContent').classList.remove('hidden');
+            document.getElementById('quizControls').classList.remove('hidden');
+            
+            displayQuestion();
+        }
+
+        // 문제 표시
+        function displayQuestion() {
+            const question = quizQuestions[currentQuizIndex];
+            const progress = ((currentQuizIndex + 1) / quizQuestions.length) * 100;
+            
+            document.getElementById('quizProgress').textContent = `${currentQuizIndex + 1} / ${quizQuestions.length}`;
+            document.getElementById('quizProgressBar').style.width = `${progress}%`;
+            
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = `
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4">문제 ${currentQuizIndex + 1}</h4>
+                    <p class="text-lg text-gray-700 mb-6">${question.question}</p>
+                    <div class="space-y-3">
+                        ${question.options.map((option, index) => `
+                            <button onclick="selectAnswer(${index})" 
+                                    class="quiz-option w-full text-left p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-all duration-300 font-medium">
+                                ${index + 1}. ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 답 선택
+        function selectAnswer(selectedIndex) {
+            const question = quizQuestions[currentQuizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            // 모든 옵션 비활성화
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            // 정답/오답 표시
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('bg-green-100', 'border-green-400', 'text-green-800');
+                    option.innerHTML += ' ✅';
+                } else if (index === selectedIndex && index !== question.correct) {
+                    option.classList.add('bg-red-100', 'border-red-400', 'text-red-800');
+                    option.innerHTML += ' ❌';
+                }
+            });
+            
+            // 점수 계산
+            if (selectedIndex === question.correct) {
+                quizScore++;
+            }
+            
+            // 설명 표시
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML += `
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl mt-4">
+                    <div class="flex items-start">
+                        <div class="text-2xl mr-3">💡</div>
+                        <div>
+                            <h5 class="font-bold text-yellow-800 mb-2">설명</h5>
+                            <p class="text-yellow-700">${question.explanation}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 다음 버튼 표시
+            setTimeout(() => {
+                const nextButton = currentQuizIndex < quizQuestions.length - 1 ? 
+                    `<button onclick="nextQuestion()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300 mt-4">
+                        다음 문제 ➡️
+                    </button>` :
+                    `<button onclick="showQuizResult()" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300 mt-4">
+                        결과 보기 🎉
+                    </button>`;
+                
+                quizContent.innerHTML += `<div class="text-center">${nextButton}</div>`;
+            }, 1000);
+        }
+
+        // 다음 문제
+        function nextQuestion() {
+            currentQuizIndex++;
+            displayQuestion();
+        }
+
+        // 퀴즈 결과 표시
+        function showQuizResult() {
+            document.getElementById('quizContent').classList.add('hidden');
+            document.getElementById('quizControls').classList.add('hidden');
+            document.getElementById('quizResult').classList.remove('hidden');
+            
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            
+            // 결과에 따른 이모지와 메시지
+            let emoji, title, message;
+            if (percentage === 100) {
+                emoji = '🏆';
+                title = '완벽해요!';
+                message = '알고리즘 마스터! 모든 문제를 맞혔어요!';
+            } else if (percentage >= 80) {
+                emoji = '🎉';
+                title = '훌륭해요!';
+                message = '알고리즘을 잘 이해하고 있어요!';
+            } else if (percentage >= 60) {
+                emoji = '👍';
+                title = '좋아요!';
+                message = '조금만 더 공부하면 완벽할 거예요!';
+            } else {
+                emoji = '📚';
+                title = '다시 도전해보세요!';
+                message = '알고리즘을 다시 한 번 학습해보세요!';
+            }
+            
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('finalScore').textContent = `${quizScore} / ${quizQuestions.length}`;
+            document.getElementById('scoreMessage').textContent = message;
+        }
+
+        // 퀴즈 다시 시작
+        function restartQuiz() {
+            showQuiz();
+        }
+
+        // 퀴즈 닫기
+        function closeQuiz() {
+            document.getElementById('quizModal').classList.add('hidden');
+            document.getElementById('quizModal').classList.remove('flex');
+        }
+        
+        // 학습 현황 표시
+        function showProgress() {
+            alert('📊 학습 현황\n\n버블정렬: 3회 완료 ✅\n선택정렬: 1회 완료 ✅\n순차탐색: 2회 완료 ✅\n이진탐색: 아직 안 해봤어요! 🎯\n\n퀴즈 정답률: 85% 🎉');
+        }
+        
+        // 도움말 표시
+        function showHelp() {
+            alert('❓ 도움말\n\n🫧 버블정렬: 인접한 두 원소를 비교하여 정렬\n🎯 선택정렬: 최솟값을 찾아 앞자리와 교환\n🔍 순차탐색: 처음부터 끝까지 하나씩 확인\n⚡ 이진탐색: 정렬된 배열을 반으로 나누어 탐색\n\n더 자세한 설명은 각 알고리즘을 선택해서 확인해보세요! 😊');
+        }
+        
+        // 시뮬레이션 시작
+        function startSimulation() {
+            if (currentData.length === 0) {
+                alert('먼저 데이터를 설정해주세요!');
+                return;
+            }
+
+            isRunning = true;
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            
+            // 알고리즘별 시뮬레이션 실행
+            switch (currentAlgorithm) {
+                case 'bubble':
+                    runBubbleSort();
+                    break;
+                case 'selection':
+                    runSelectionSort();
+                    break;
+                case 'linear':
+                    runLinearSearch();
+                    break;
+                case 'binary':
+                    runBinarySearch();
+                    break;
+            }
+        }
+
+        // 시뮬레이션 일시정지
+        function pauseSimulation() {
+            isRunning = false;
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+        }
+
+        // 시뮬레이션 초기화
+        function resetSimulation() {
+            isRunning = false;
+            stepMode = false;
+            stepGenerator = null;
+            currentStep = 0;
+            totalSteps = 0;
+            
+            if (originalData.length > 0) {
+                currentData = [...originalData];
+                // 이진탐색의 경우 다시 정렬
+                if (currentAlgorithm === 'binary') {
+                    currentData.sort((a, b) => a - b);
+                }
+                visualizeData();
+                enableControls();
+                updateStepInfo('초기화되었습니다. 시뮬레이션을 시작해보세요!');
+            } else {
+                disableControls();
+                updateStepInfo('데이터를 입력해주세요!');
+            }
+            
+            updateProgressBar(0);
+            clearHighlights();
+        }
+
+        // 한 단계씩 실행을 위한 전역 변수들
+        let stepMode = false;
+        let stepGenerator = null;
+
+        // 한 단계씩 실행
+        function nextStep() {
+            if (currentData.length === 0) {
+                alert('먼저 데이터를 설정해주세요!');
+                return;
+            }
+
+            if (!stepMode) {
+                // 단계별 모드 시작
+                stepMode = true;
+                isRunning = false;
+                
+                // 알고리즘별 제너레이터 생성
+                switch (currentAlgorithm) {
+                    case 'bubble':
+                        stepGenerator = bubbleSortGenerator();
+                        break;
+                    case 'selection':
+                        stepGenerator = selectionSortGenerator();
+                        break;
+                    case 'linear':
+                        stepGenerator = linearSearchGenerator();
+                        break;
+                    case 'binary':
+                        stepGenerator = binarySearchGenerator();
+                        break;
+                }
+                
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = true;
+                updateStepInfo('단계별 실행 모드입니다. "한 단계" 버튼을 계속 눌러보세요!');
+            }
+
+            // 다음 단계 실행
+            if (stepGenerator) {
+                const result = stepGenerator.next();
+                if (result.done) {
+                    stepMode = false;
+                    stepGenerator = null;
+                    document.getElementById('playBtn').disabled = false;
+                    updateStepInfo('🎉 알고리즘이 완료되었습니다!');
+                }
+            }
+        }
+
+        // 버블정렬 실행
+        async function runBubbleSort() {
+            const n = currentData.length;
+            const sortOrder = getSortOrder();
+            const isAscending = sortOrder === 'asc';
+            totalSteps = (n * (n - 1)) / 2;
+            currentStep = 0;
+
+            updateStepInfo(`${isAscending ? '🔼 오름차순' : '🔽 내림차순'} 버블정렬을 시작합니다!`);
+            await sleep(animationSpeed / 2);
+
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    if (!isRunning) return;
+
+                    // 현재 비교하는 원소들 강조
+                    highlightBlocks([j, j + 1], 'comparing');
+                    updateStepInfo(`${currentData[j]}과 ${currentData[j + 1]}을 비교합니다.`);
+                    
+                    await sleep(animationSpeed);
+                    
+                    // 정렬 방향에 따른 비교 조건
+                    const shouldSwap = isAscending ? 
+                        currentData[j] > currentData[j + 1] : 
+                        currentData[j] < currentData[j + 1];
+                    
+                    if (shouldSwap) {
+                        // 교환 애니메이션
+                        highlightBlocks([j, j + 1], 'swapping');
+                        const reason = isAscending ? 
+                            `${currentData[j]}이 더 크므로 ${currentData[j + 1]}와 위치를 바꿉니다.` :
+                            `${currentData[j]}이 더 작으므로 ${currentData[j + 1]}와 위치를 바꿉니다.`;
+                        updateStepInfo(reason);
+                        
+                        // 실제 데이터 교환
+                        [currentData[j], currentData[j + 1]] = [currentData[j + 1], currentData[j]];
+                        
+                        // 시각적 교환 애니메이션 실행
+                        await animateSwap(j, j + 1);
+                    } else {
+                        // 교환하지 않을 때는 잠깐 대기만
+                        const reason = isAscending ? 
+                            `${currentData[j]} ≤ ${currentData[j + 1]}이므로 그대로 둡니다.` :
+                            `${currentData[j]} ≥ ${currentData[j + 1]}이므로 그대로 둡니다.`;
+                        updateStepInfo(reason);
+                        await sleep(animationSpeed / 2);
+                    }
+                    
+                    currentStep++;
+                    updateProgressBar((currentStep / totalSteps) * 100);
+                    
+                    // 강조 해제
+                    clearHighlights();
+                    await sleep(animationSpeed / 2);
+                }
+                
+                // 정렬된 원소 표시
+                highlightBlocks([n - i - 1], 'sorted');
+            }
+            
+            // 모든 원소가 정렬됨 표시
+            highlightBlocks(Array.from({length: n}, (_, i) => i), 'sorted');
+            updateStepInfo(`🎉 ${isAscending ? '오름차순' : '내림차순'} 버블정렬이 완료되었습니다!`);
+            isRunning = false;
+            document.getElementById('pauseBtn').disabled = true;
+        }
+
+        // 선택정렬 실행
+        async function runSelectionSort() {
+            const n = currentData.length;
+            const sortOrder = getSortOrder();
+            const isAscending = sortOrder === 'asc';
+            totalSteps = n;
+            currentStep = 0;
+
+            updateStepInfo(`${isAscending ? '🔼 오름차순' : '🔽 내림차순'} 선택정렬을 시작합니다!`);
+            await sleep(animationSpeed / 2);
+
+            for (let i = 0; i < n - 1; i++) {
+                if (!isRunning) return;
+
+                let targetIndex = i;
+                highlightBlocks([i], 'current');
+                const targetType = isAscending ? '가장 작은' : '가장 큰';
+                updateStepInfo(`위치 ${i}에 들어갈 ${targetType} 값을 찾습니다.`);
+                
+                await sleep(animationSpeed);
+
+                // 최솟값/최댓값 찾기
+                for (let j = i + 1; j < n; j++) {
+                    if (!isRunning) return;
+                    
+                    highlightBlocks([j], 'comparing');
+                    const currentTarget = isAscending ? '최솟값' : '최댓값';
+                    updateStepInfo(`${currentData[j]}을 현재 ${currentTarget} ${currentData[targetIndex]}와 비교합니다.`);
+                    
+                    await sleep(animationSpeed / 2);
+                    
+                    // 정렬 방향에 따른 비교 조건
+                    const shouldUpdate = isAscending ? 
+                        currentData[j] < currentData[targetIndex] : 
+                        currentData[j] > currentData[targetIndex];
+                    
+                    if (shouldUpdate) {
+                        clearHighlights();
+                        targetIndex = j;
+                        highlightBlocks([targetIndex], 'minimum');
+                        const newTarget = isAscending ? '최솟값' : '최댓값';
+                        updateStepInfo(`새로운 ${newTarget} ${currentData[targetIndex]}을 찾았습니다!`);
+                        await sleep(animationSpeed / 2);
+                    }
+                }
+
+                // 교환
+                if (targetIndex !== i) {
+                    highlightBlocks([i, targetIndex], 'swapping');
+                    const targetType = isAscending ? '최솟값' : '최댓값';
+                    updateStepInfo(`${targetType} ${currentData[targetIndex]}을 위치 ${i}로 이동합니다.`);
+                    
+                    // 실제 데이터 교환
+                    [currentData[i], currentData[targetIndex]] = [currentData[targetIndex], currentData[i]];
+                    
+                    // 시각적 교환 애니메이션 실행
+                    await animateSwap(i, targetIndex);
+                } else {
+                    // 교환할 필요가 없을 때
+                    const targetType = isAscending ? '최솟값' : '최댓값';
+                    updateStepInfo(`위치 ${i}의 ${currentData[i]}이 이미 ${targetType}이므로 그대로 둡니다.`);
+                    await sleep(animationSpeed / 2);
+                }
+
+                // 정렬된 원소 표시
+                highlightBlocks([i], 'sorted');
+                currentStep++;
+                updateProgressBar((currentStep / totalSteps) * 100);
+                
+                await sleep(animationSpeed / 2);
+            }
+
+            // 모든 원소가 정렬됨 표시
+            highlightBlocks(Array.from({length: n}, (_, i) => i), 'sorted');
+            updateStepInfo(`🎉 ${isAscending ? '오름차순' : '내림차순'} 선택정렬이 완료되었습니다!`);
+            isRunning = false;
+            document.getElementById('pauseBtn').disabled = true;
+        }
+
+        // 순차탐색 실행
+        async function runLinearSearch() {
+            totalSteps = currentData.length;
+            currentStep = 0;
+
+            updateStepInfo(`${searchTarget}을 찾기 위해 처음부터 하나씩 확인합니다. (정렬되지 않은 데이터도 탐색 가능!)`);
+            await sleep(animationSpeed);
+
+            for (let i = 0; i < currentData.length; i++) {
+                if (!isRunning) return;
+
+                highlightBlocks([i], 'comparing');
+                updateStepInfo(`위치 ${i}: ${currentData[i]}을 확인합니다.`);
+                
+                await sleep(animationSpeed);
+
+                currentStep++;
+                updateProgressBar((currentStep / totalSteps) * 100);
+
+                if (currentData[i] === searchTarget) {
+                    highlightBlocks([i], 'found');
+                    updateStepInfo(`🎉 ${searchTarget}을 위치 ${i}에서 찾았습니다!`);
+                    isRunning = false;
+                    document.getElementById('pauseBtn').disabled = true;
+                    return;
+                }
+
+                await sleep(animationSpeed / 2);
+            }
+
+            clearHighlights();
+            updateStepInfo(`😞 ${searchTarget}을 찾을 수 없습니다.`);
+            isRunning = false;
+            document.getElementById('pauseBtn').disabled = true;
+        }
+
+        // 이진탐색 실행
+        async function runBinarySearch() {
+            let left = 0;
+            let right = currentData.length - 1;
+            totalSteps = Math.ceil(Math.log2(currentData.length));
+            currentStep = 0;
+
+            updateStepInfo(`정렬된 배열에서 ${searchTarget}을 이진탐색으로 찾습니다. (이진탐색은 반드시 정렬된 데이터가 필요해요!)`);
+            await sleep(animationSpeed);
+
+            while (left <= right) {
+                if (!isRunning) return;
+
+                const mid = Math.floor((left + right) / 2);
+                
+                // 탐색 범위 표시
+                highlightBlocks(Array.from({length: right - left + 1}, (_, i) => left + i), 'range');
+                await sleep(animationSpeed / 2);
+                
+                // 중간값 강조
+                highlightBlocks([mid], 'comparing');
+                updateStepInfo(`중간 위치 ${mid}: ${currentData[mid]}을 확인합니다.`);
+                
+                await sleep(animationSpeed);
+
+                if (currentData[mid] === searchTarget) {
+                    highlightBlocks([mid], 'found');
+                    updateStepInfo(`🎉 ${searchTarget}을 위치 ${mid}에서 찾았습니다!`);
+                    isRunning = false;
+                    document.getElementById('pauseBtn').disabled = true;
+                    return;
+                } else if (currentData[mid] < searchTarget) {
+                    updateStepInfo(`${currentData[mid]} < ${searchTarget}이므로 오른쪽 절반을 탐색합니다.`);
+                    left = mid + 1;
+                } else {
+                    updateStepInfo(`${currentData[mid]} > ${searchTarget}이므로 왼쪽 절반을 탐색합니다.`);
+                    right = mid - 1;
+                }
+
+                currentStep++;
+                updateProgressBar((currentStep / totalSteps) * 100);
+                await sleep(animationSpeed);
+            }
+
+            clearHighlights();
+            updateStepInfo(`😞 ${searchTarget}을 찾을 수 없습니다.`);
+            isRunning = false;
+            document.getElementById('pauseBtn').disabled = true;
+        }
+
+        // 블록 강조 표시 (개선된 버전)
+        function highlightBlocks(indices, type) {
+            clearHighlights();
+            
+            const effects = {
+                'comparing': {
+                    gradient: 'from-yellow-400 to-orange-400',
+                    transform: 'scale-110',
+                    shadow: 'shadow-2xl',
+                    animation: 'animate-pulse',
+                    border: 'border-4 border-yellow-300'
+                },
+                'swapping': {
+                    gradient: 'from-red-400 to-pink-400',
+                    transform: 'scale-125 rotate-3',
+                    shadow: 'shadow-2xl',
+                    animation: 'animate-bounce',
+                    border: 'border-4 border-red-300'
+                },
+                'sorted': {
+                    gradient: 'from-green-400 to-emerald-400',
+                    transform: 'scale-105',
+                    shadow: 'shadow-xl',
+                    animation: '',
+                    border: 'border-4 border-green-300'
+                },
+                'current': {
+                    gradient: 'from-blue-400 to-indigo-400',
+                    transform: 'scale-110',
+                    shadow: 'shadow-xl',
+                    animation: 'animate-pulse',
+                    border: 'border-4 border-blue-300'
+                },
+                'minimum': {
+                    gradient: 'from-pink-500 to-rose-500',
+                    transform: 'scale-115',
+                    shadow: 'shadow-2xl',
+                    animation: 'animate-pulse',
+                    border: 'border-4 border-pink-400'
+                },
+                'found': {
+                    gradient: 'from-green-400 to-emerald-400',
+                    transform: 'scale-125',
+                    shadow: 'shadow-2xl',
+                    animation: 'animate-bounce',
+                    border: 'border-4 border-green-300'
+                },
+                'range': {
+                    gradient: 'from-gray-400 to-gray-500',
+                    transform: 'scale-105',
+                    shadow: 'shadow-lg',
+                    animation: '',
+                    border: 'border-2 border-gray-300'
+                }
+            };
+
+            indices.forEach(index => {
+                const block = document.getElementById(`block-${index}`);
+                const wrapper = block?.parentElement;
+                
+                if (block && wrapper) {
+                    const effect = effects[type];
+                    
+                    // 블록 스타일 업데이트
+                    block.className = `data-block bg-gradient-to-br ${effect.gradient} text-white rounded-xl p-4 min-w-16 text-center font-bold text-xl ${effect.shadow} ${effect.border} transition-all duration-500 hover:scale-105 relative transform ${effect.transform} ${effect.animation}`;
+                    
+                    // 래퍼에 특별한 효과 추가
+                    wrapper.style.zIndex = type === 'swapping' || type === 'found' ? '10' : '1';
+                    
+                    // 상태별 추가 시각적 효과
+                    if (type === 'found') {
+                        // 찾았을 때 특별한 효과
+                        wrapper.style.filter = 'drop-shadow(0 0 20px rgba(34, 197, 94, 0.6))';
+                        setTimeout(() => {
+                            wrapper.style.filter = '';
+                        }, 2000);
+                    } else if (type === 'comparing') {
+                        // 비교할 때 깜빡이는 효과
+                        wrapper.style.filter = 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.5))';
+                    } else if (type === 'swapping') {
+                        // 교환할 때 강한 그림자
+                        wrapper.style.filter = 'drop-shadow(0 0 20px rgba(239, 68, 68, 0.6))';
+                    } else if (type === 'minimum') {
+                        // 최솟값일 때 분홍색 글로우 효과
+                        wrapper.style.filter = 'drop-shadow(0 0 25px rgba(236, 72, 153, 0.8))';
+                    }
+                }
+            });
+        }
+
+        // 강조 해제
+        function clearHighlights() {
+            const blocks = document.querySelectorAll('.data-block');
+            const wrappers = document.querySelectorAll('.block-wrapper');
+            
+            blocks.forEach(block => {
+                block.className = 'data-block bg-gradient-to-br from-blue-400 to-purple-500 text-white rounded-xl p-4 min-w-16 text-center font-bold text-xl shadow-lg transition-all duration-500 hover:scale-105 relative';
+            });
+            
+            wrappers.forEach(wrapper => {
+                wrapper.style.zIndex = '1';
+                wrapper.style.filter = '';
+            });
+        }
+
+        // 단계 정보 업데이트
+        function updateStepInfo(message) {
+            document.getElementById('explanation').textContent = message;
+        }
+
+        // 진행률 바 업데이트
+        function updateProgressBar(percentage) {
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        // 지연 함수
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 버블정렬 제너레이터 (단계별 실행용)
+        function* bubbleSortGenerator() {
+            const n = currentData.length;
+            const sortOrder = getSortOrder();
+            const isAscending = sortOrder === 'asc';
+            totalSteps = (n * (n - 1)) / 2;
+            currentStep = 0;
+
+            updateStepInfo(`${isAscending ? '🔼 오름차순' : '🔽 내림차순'} 버블정렬을 단계별로 실행합니다!`);
+            yield;
+
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    // 현재 비교하는 원소들 강조
+                    highlightBlocks([j, j + 1], 'comparing');
+                    updateStepInfo(`${currentData[j]}과 ${currentData[j + 1]}을 비교합니다.`);
+                    yield;
+                    
+                    // 정렬 방향에 따른 비교 조건
+                    const shouldSwap = isAscending ? 
+                        currentData[j] > currentData[j + 1] : 
+                        currentData[j] < currentData[j + 1];
+                    
+                    if (shouldSwap) {
+                        // 교환 애니메이션
+                        highlightBlocks([j, j + 1], 'swapping');
+                        const reason = isAscending ? 
+                            `${currentData[j]}이 더 크므로 ${currentData[j + 1]}와 위치를 바꿉니다.` :
+                            `${currentData[j]}이 더 작으므로 ${currentData[j + 1]}와 위치를 바꿉니다.`;
+                        updateStepInfo(reason);
+                        
+                        // 실제 데이터 교환
+                        [currentData[j], currentData[j + 1]] = [currentData[j + 1], currentData[j]];
+                        
+                        // 시각적 교환 애니메이션 실행 (제너레이터에서는 동기적으로)
+                        const wrapper1 = document.getElementById(`wrapper-${j}`);
+                        const wrapper2 = document.getElementById(`wrapper-${j + 1}`);
+                        if (wrapper1 && wrapper2) {
+                            const rect1 = wrapper1.getBoundingClientRect();
+                            const rect2 = wrapper2.getBoundingClientRect();
+                            const distance = rect2.left - rect1.left;
+                            
+                            wrapper1.style.zIndex = '20';
+                            wrapper2.style.zIndex = '20';
+                            wrapper1.style.transition = 'transform 0.6s ease-in-out';
+                            wrapper2.style.transition = 'transform 0.6s ease-in-out';
+                            wrapper1.style.transform = `translateX(${distance}px) translateY(-20px)`;
+                            wrapper2.style.transform = `translateX(${-distance}px) translateY(-20px)`;
+                            
+                            setTimeout(() => {
+                                const temp1Content = wrapper1.innerHTML;
+                                wrapper1.innerHTML = wrapper2.innerHTML;
+                                wrapper2.innerHTML = temp1Content;
+                                
+                                const block1 = wrapper1.querySelector('.data-block');
+                                const block2 = wrapper2.querySelector('.data-block');
+                                if (block1) block1.id = `block-${j}`;
+                                if (block2) block2.id = `block-${j + 1}`;
+                                
+                                wrapper1.style.transition = '';
+                                wrapper2.style.transition = '';
+                                wrapper1.style.transform = '';
+                                wrapper2.style.transform = '';
+                                wrapper1.style.zIndex = '1';
+                                wrapper2.style.zIndex = '1';
+                            }, 600);
+                        }
+                        yield;
+                    } else {
+                        // 교환하지 않을 때는 설명만 표시
+                        const reason = isAscending ? 
+                            `${currentData[j]} ≤ ${currentData[j + 1]}이므로 그대로 둡니다.` :
+                            `${currentData[j]} ≥ ${currentData[j + 1]}이므로 그대로 둡니다.`;
+                        updateStepInfo(reason);
+                        yield;
+                    }
+                    
+                    currentStep++;
+                    updateProgressBar((currentStep / totalSteps) * 100);
+                    clearHighlights();
+                }
+                
+                // 정렬된 원소 표시
+                highlightBlocks([n - i - 1], 'sorted');
+                yield;
+            }
+            
+            // 모든 원소가 정렬됨 표시
+            highlightBlocks(Array.from({length: n}, (_, i) => i), 'sorted');
+            updateStepInfo(`🎉 ${isAscending ? '오름차순' : '내림차순'} 버블정렬이 완료되었습니다!`);
+        }
+
+        // 선택정렬 제너레이터 (단계별 실행용)
+        function* selectionSortGenerator() {
+            const n = currentData.length;
+            const sortOrder = getSortOrder();
+            const isAscending = sortOrder === 'asc';
+            totalSteps = n;
+            currentStep = 0;
+
+            updateStepInfo(`${isAscending ? '🔼 오름차순' : '🔽 내림차순'} 선택정렬을 단계별로 실행합니다!`);
+            yield;
+
+            for (let i = 0; i < n - 1; i++) {
+                let targetIndex = i;
+                highlightBlocks([i], 'current');
+                const targetType = isAscending ? '가장 작은' : '가장 큰';
+                updateStepInfo(`위치 ${i}에 들어갈 ${targetType} 값을 찾습니다.`);
+                yield;
+
+                // 최솟값/최댓값 찾기
+                for (let j = i + 1; j < n; j++) {
+                    highlightBlocks([j], 'comparing');
+                    const currentTarget = isAscending ? '최솟값' : '최댓값';
+                    updateStepInfo(`${currentData[j]}을 현재 ${currentTarget} ${currentData[targetIndex]}와 비교합니다.`);
+                    yield;
+                    
+                    // 정렬 방향에 따른 비교 조건
+                    const shouldUpdate = isAscending ? 
+                        currentData[j] < currentData[targetIndex] : 
+                        currentData[j] > currentData[targetIndex];
+                    
+                    if (shouldUpdate) {
+                        clearHighlights();
+                        targetIndex = j;
+                        highlightBlocks([targetIndex], 'minimum');
+                        const newTarget = isAscending ? '최솟값' : '최댓값';
+                        updateStepInfo(`새로운 ${newTarget} ${currentData[targetIndex]}을 찾았습니다!`);
+                        yield;
+                    }
+                }
+
+                // 교환
+                if (targetIndex !== i) {
+                    highlightBlocks([i, targetIndex], 'swapping');
+                    const targetType = isAscending ? '최솟값' : '최댓값';
+                    updateStepInfo(`${targetType} ${currentData[targetIndex]}을 위치 ${i}로 이동합니다.`);
+                    
+                    // 실제 데이터 교환
+                    [currentData[i], currentData[targetIndex]] = [currentData[targetIndex], currentData[i]];
+                    
+                    // 시각적 교환 애니메이션 실행 (제너레이터에서는 동기적으로)
+                    const wrapper1 = document.getElementById(`wrapper-${i}`);
+                    const wrapper2 = document.getElementById(`wrapper-${targetIndex}`);
+                    if (wrapper1 && wrapper2) {
+                        const rect1 = wrapper1.getBoundingClientRect();
+                        const rect2 = wrapper2.getBoundingClientRect();
+                        const distance = rect2.left - rect1.left;
+                        
+                        wrapper1.style.zIndex = '20';
+                        wrapper2.style.zIndex = '20';
+                        wrapper1.style.transition = 'transform 0.6s ease-in-out';
+                        wrapper2.style.transition = 'transform 0.6s ease-in-out';
+                        wrapper1.style.transform = `translateX(${distance}px) translateY(-20px)`;
+                        wrapper2.style.transform = `translateX(${-distance}px) translateY(-20px)`;
+                        
+                        setTimeout(() => {
+                            const temp1Content = wrapper1.innerHTML;
+                            wrapper1.innerHTML = wrapper2.innerHTML;
+                            wrapper2.innerHTML = temp1Content;
+                            
+                            const block1 = wrapper1.querySelector('.data-block');
+                            const block2 = wrapper2.querySelector('.data-block');
+                            if (block1) block1.id = `block-${i}`;
+                            if (block2) block2.id = `block-${targetIndex}`;
+                            
+                            wrapper1.style.transition = '';
+                            wrapper2.style.transition = '';
+                            wrapper1.style.transform = '';
+                            wrapper2.style.transform = '';
+                            wrapper1.style.zIndex = '1';
+                            wrapper2.style.zIndex = '1';
+                        }, 600);
+                    }
+                    yield;
+                } else {
+                    // 교환할 필요가 없을 때
+                    const targetType = isAscending ? '최솟값' : '최댓값';
+                    updateStepInfo(`위치 ${i}의 ${currentData[i]}이 이미 ${targetType}이므로 그대로 둡니다.`);
+                    yield;
+                }
+
+                // 정렬된 원소 표시
+                highlightBlocks([i], 'sorted');
+                currentStep++;
+                updateProgressBar((currentStep / totalSteps) * 100);
+                yield;
+            }
+
+            // 모든 원소가 정렬됨 표시
+            highlightBlocks(Array.from({length: n}, (_, i) => i), 'sorted');
+            updateStepInfo(`🎉 ${isAscending ? '오름차순' : '내림차순'} 선택정렬이 완료되었습니다!`);
+        }
+
+        // 순차탐색 제너레이터 (단계별 실행용)
+        function* linearSearchGenerator() {
+            totalSteps = currentData.length;
+            currentStep = 0;
+
+            updateStepInfo(`${searchTarget}을 찾기 위해 처음부터 하나씩 확인합니다. (정렬되지 않은 데이터도 탐색 가능!)`);
+            yield;
+
+            for (let i = 0; i < currentData.length; i++) {
+                highlightBlocks([i], 'comparing');
+                updateStepInfo(`위치 ${i}: ${currentData[i]}을 확인합니다.`);
+                yield;
+
+                currentStep++;
+                updateProgressBar((currentStep / totalSteps) * 100);
+
+                if (currentData[i] === searchTarget) {
+                    highlightBlocks([i], 'found');
+                    updateStepInfo(`🎉 ${searchTarget}을 위치 ${i}에서 찾았습니다!`);
+                    return;
+                }
+            }
+
+            clearHighlights();
+            updateStepInfo(`😞 ${searchTarget}을 찾을 수 없습니다.`);
+        }
+
+        // 이진탐색 제너레이터 (단계별 실행용)
+        function* binarySearchGenerator() {
+            let left = 0;
+            let right = currentData.length - 1;
+            totalSteps = Math.ceil(Math.log2(currentData.length));
+            currentStep = 0;
+
+            updateStepInfo(`정렬된 배열에서 ${searchTarget}을 이진탐색으로 찾습니다. (이진탐색은 반드시 정렬된 데이터가 필요해요!)`);
+            yield;
+
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                
+                // 탐색 범위 표시
+                highlightBlocks(Array.from({length: right - left + 1}, (_, i) => left + i), 'range');
+                yield;
+                
+                // 중간값 강조
+                highlightBlocks([mid], 'comparing');
+                updateStepInfo(`중간 위치 ${mid}: ${currentData[mid]}을 확인합니다.`);
+                yield;
+
+                if (currentData[mid] === searchTarget) {
+                    highlightBlocks([mid], 'found');
+                    updateStepInfo(`🎉 ${searchTarget}을 위치 ${mid}에서 찾았습니다!`);
+                    return;
+                } else if (currentData[mid] < searchTarget) {
+                    updateStepInfo(`${currentData[mid]} < ${searchTarget}이므로 오른쪽 절반을 탐색합니다.`);
+                    left = mid + 1;
+                } else {
+                    updateStepInfo(`${currentData[mid]} > ${searchTarget}이므로 왼쪽 절반을 탐색합니다.`);
+                    right = mid - 1;
+                }
+
+                currentStep++;
+                updateProgressBar((currentStep / totalSteps) * 100);
+                yield;
+            }
+
+            clearHighlights();
+            updateStepInfo(`😞 ${searchTarget}을 찾을 수 없습니다.`);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9752f89a657003cc',t:'MTc1NjIwNzU1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
